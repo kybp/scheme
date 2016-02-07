@@ -3,7 +3,7 @@ CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
 
-TESTS = parser_tests eval_tests
+TESTS = parser_tests printer_tests eval_tests
 
 tests: $(TESTS)
 
@@ -61,4 +61,11 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/scheme.hh\
 	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/eval_tests.cc
 
 eval_tests: scheme.o eval_tests.o gtest_main.a
+	$(CXX) $(CPPFLAGS) $^ -o $@
+
+printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme.hh\
+	         $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/printer_tests.cc
+
+printer_tests: scheme.o printer_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
