@@ -94,10 +94,10 @@ SchemeEnvironment standardEnvironment()
     return env;
 }
 
-class eval : public boost::static_visitor<SchemeExpr> {
+class evalVisitor : public boost::static_visitor<SchemeExpr> {
     mutable SchemeEnvironment env;
 public:
-    eval(SchemeEnvironment env) : env(env) {}
+    evalVisitor(SchemeEnvironment env = standardEnvironment()) : env(env) {}
 
     SchemeExpr operator()(int i) const {
         return { i };
@@ -117,7 +117,7 @@ public:
             return { list[1] };
         }
         else if (car == "if") {
-            (void)boost::apply_visitor(eval(env), list[1]);
+            (void)boost::apply_visitor(evalVisitor(env), list[1]);
             if (true) { // how do I test a SchemeExpr ?
                 return list[2];
             } else {
@@ -125,18 +125,27 @@ public:
             }
         } else if (car == "define") {
             auto var = boost::get<std::string>(list[1]);
-            env[var] = boost::apply_visitor(eval(env), list[2]);
+            env[var] = boost::apply_visitor(evalVisitor(env), list[2]);
             return list[1];
         } else {
-            auto car = boost::apply_visitor(eval(env), list[0]);
+            auto car = boost::apply_visitor(evalVisitor(env), list[0]);
             auto proc = boost::get<std::shared_ptr<SchemeFunction>>(car);
-            auto evalArg = [this](SchemeExpr e)
-                { return boost::apply_visitor(eval(env), e); };
+            auto evalVisitorArg = [this](SchemeExpr e)
+                { return boost::apply_visitor(evalVisitor(env), e); };
             std::vector<SchemeExpr> args;
             std::transform(list.begin() + 1, list.end(),
-                           back_inserter(args), evalArg );
+                           back_inserter(args), evalVisitorArg );
             return proc->fn(args);
         }
     }
-    
 };
+
+SchemeExpr eval(SchemeExpr e)
+{
+    return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
+}
+
+SchemeExpr eval(SchemeExpr e, SchemeEnvironment env = standardEnvironment())
+{
+    return boost::apply_visitor(evalVisitor(env), e);
+}
