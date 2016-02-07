@@ -162,6 +162,7 @@ public:
     }
 
     std::string operator()(const std::string& symbol) const {
+        os << symbol;
         return symbol;
     }
 
@@ -193,6 +194,6 @@ public:
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e)
 {
     std::ostringstream ss;
-    return os << boost::get<std::string>(
-        boost::apply_visitor(stringVisitor(ss), e));
+    boost::apply_visitor(stringVisitor(ss), e);
+    return os << ss.str();
 }

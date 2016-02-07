@@ -20,6 +20,11 @@ inline int intValue(SchemeExpr e)
     return boost::get<int>(e);
 }
 
+inline std::string stringVal(SchemeExpr e)
+{
+    return boost::get<std::string>(e);
+}
+
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
 SchemeEnvironment standardEnvironment();
 
