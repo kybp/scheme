@@ -2,13 +2,13 @@
 #include <cctype>
 #include <string>
 #include <sstream>
-#include <vector>
+#include <deque>
 #include <boost/variant.hpp>
 #include "scheme.hh"
 
-std::vector<std::string> tokenize(const std::string string)
+std::deque<std::string> tokenize(const std::string string)
 {
-    std::vector<std::string> tokens;
+    std::deque<std::string> tokens;
     std::ostringstream currentToken;
 
     for (const auto& c : string) {
@@ -36,11 +36,31 @@ bool isInteger(const std::string token)
     return std::all_of(token.begin(), token.end(), ::isdigit);
 }
 
-boost::variant<int, std::string> readToken(const std::string token)
+SchemeExpr readFromTokens(std::deque<std::string>& tokens)
 {
-    if (isInteger(token)) {
+    if (tokens.empty()) {
+        throw std::runtime_error("unexpected EOF while reading");
+    }
+    std::string token = tokens.front();
+    tokens.pop_front();
+    if (token == "(") {
+        std::deque<SchemeExpr> list;
+        while (tokens.front() != ")") {
+            list.push_back(readFromTokens(tokens));
+        }
+        tokens.pop_front();     // remove ")"
+        return { list };
+    } else if (token == ")") {
+        throw std::runtime_error("unexpected ')'");
+    } else if (isInteger(token)) {
         return { std::atoi(token.c_str()) };
-    } else { // Not accounting for lists yet
+    } else {
         return { token };
     }
+}
+
+SchemeExpr parse(const std::string& program)
+{
+    auto tokens = tokenize(program);
+    return readFromTokens(tokens);
 }
