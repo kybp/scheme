@@ -172,12 +172,17 @@ public:
 
     std::string operator()(const std::deque<SchemeExpr>& list) const {
         os << "(";
-        if (list.size() == 1) {
+        switch (list.size()) {
+        case 0:
+            break;
+        case 1:
             boost::apply_visitor(stringVisitor(os), list[0]);
-        } else {
-            for (const auto& x : list) {
+            break;
+        default:
+            os << list.front();
+            for (auto it = list.cbegin() + 1; it != list.cend(); ++it) {
                 os << " ";
-                boost::apply_visitor(stringVisitor(os), x);
+                boost::apply_visitor(stringVisitor(os), *it);
             }
         }
         os << ")";
