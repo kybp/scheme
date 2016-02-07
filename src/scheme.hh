@@ -31,7 +31,7 @@ inline int intValue(const SchemeExpr& e)
 {
     try {
         return boost::get<int>(e);
-    } catch (boost::bad_get&) {
+    } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "Integer expected, got " << e;
         throw scheme_error(error.str());
@@ -40,22 +40,46 @@ inline int intValue(const SchemeExpr& e)
 
 inline std::string stringValue(const SchemeExpr& e)
 {
-    return boost::get<std::string>(e);
+    try {
+        return boost::get<std::string>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
+        error << "Symbol expected, got " << e;
+        throw scheme_error(error.str());
+    }
 }
 
 inline bool boolValue(const SchemeExpr& e)
 {
-    return boost::get<bool>(e);
+    try {
+        return boost::get<bool>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
+        error << "Boolean expected, got " << e;
+        throw scheme_error(error.str());
+    }
 }
 
 inline std::shared_ptr<SchemeFunction> functionPointer(const SchemeExpr& e)
 {
-    return boost::get<std::shared_ptr<SchemeFunction>>(e);
+    try {
+        return boost::get<std::shared_ptr<SchemeFunction>>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
+        error << "Function expected, got " << e;
+        throw scheme_error(error.str());
+    }
 }
 
 inline SchemeList listValue(const SchemeExpr& e)
 {
-    return boost::get<std::deque<SchemeExpr>>(e);
+    try {
+        return boost::get<std::deque<SchemeExpr>>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
+        error << "List expected, got " << e;
+        throw scheme_error(error.str());
+    }
 }
 
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
