@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 #include <boost/variant.hpp>
 
 struct SchemeFunction;

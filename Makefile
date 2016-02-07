@@ -5,6 +5,9 @@ TEST_DIR = test
 
 TESTS = parser_tests printer_tests eval_tests
 
+scheme: $(SRC_DIR)/repl.cc scheme.o
+	$(CXX) $(CPPFLAGS) $^ -o $@
+
 tests: $(TESTS)
 
 clean:
