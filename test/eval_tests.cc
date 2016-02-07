@@ -1,4 +1,6 @@
 #include "gtest/gtest.h"
+#include "../src/builtins.hh"
+#include "../src/eval.hh"
 #include "../src/scheme.hh"
 
 TEST(EvalTest, EvalSelfEvaluating) {

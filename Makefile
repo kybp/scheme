@@ -5,8 +5,15 @@ TEST_DIR = test
 
 TESTS = parser_tests printer_tests eval_tests
 
-scheme: $(SRC_DIR)/repl.cc scheme.o
+scheme: $(SRC_DIR)/repl.cc scheme.o builtins.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
+
+scheme.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/scheme.cc
+	$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/scheme.cc
+
+builtins.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/builtins.hh $(SRC_DIR)/eval.hh\
+	    $(SRC_DIR)/builtins.cc
+	$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/builtins.cc
 
 tests: $(TESTS)
 
@@ -49,9 +56,6 @@ gtest_main.a : gtest-all.o gtest_main.o
 
 # End of gtest stuff
 
-scheme.o: $(SRC_DIR)/scheme.cc $(SRC_DIR)/scheme.hh
-	$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/scheme.cc
-
 parser_tests.o: $(TEST_DIR)/parser_tests.cc $(SRC_DIR)/scheme.hh\
 	        $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/parser_tests.cc
@@ -63,7 +67,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/scheme.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/eval_tests.cc
 
-eval_tests: scheme.o eval_tests.o gtest_main.a
+eval_tests: scheme.o builtins.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme.hh\
