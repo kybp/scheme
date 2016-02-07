@@ -27,6 +27,9 @@ SchemeExpr scmAdd(SchemeArgs args)
 
 SchemeExpr scmSub(SchemeArgs args)
 {
+    if (args.empty()) {
+        throw scheme_error("- requires at least one argument, passed 0");
+    }
     auto minus = [](int x, int y) { return x - y; };
     std::vector<int> ints;
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);

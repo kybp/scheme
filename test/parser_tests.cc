@@ -25,6 +25,10 @@ TEST(ParserTest, ParseNegativeInteger) {
     ASSERT_EQ(-1, intValue(parse("-1")));
 }
 
+TEST(ParserTest, MinusSignIsNotNumber) {
+    ASSERT_FALSE(isInteger("-"));
+}
+
 TEST(ParserTest, ParseTrue) {
     ASSERT_EQ(true, boolValue(parse("#t")));
 }

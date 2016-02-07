@@ -2,18 +2,26 @@
 #include "builtins.hh"
 #include "scheme.hh"
 
-TEST(EvalTest, EvalAddition) {
+TEST(BuiltinTest, Addition) {
     ASSERT_EQ(3, intValue(eval(parse("(+ 1 2)"))));
 }
 
-TEST(EvalTest, EvalAdditionIdentity) {
+TEST(BuiltinTest, AdditionIdentity) {
     ASSERT_EQ(0, intValue(eval(parse("(+)"))));
 }
 
-TEST(EvalTest, EvalAbsPositiveInput) {
+TEST(BuiltinTest, AbsPositiveInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs 1)"))));
 }
 
-TEST(EvalTest, EvalAbsNegativeInput) {
+TEST(BuiltinTest, AbsNegativeInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
+}
+
+TEST(BuiltinTest, SubtractNoArgsThrows) {
+    ASSERT_THROW(eval(parse("(-)")), scheme_error);
+}
+
+TEST(BuiltinTest, SubtractOneArgNegates) {
+    ASSERT_EQ(-1, intValue(eval(parse("(- 1)"))));
 }

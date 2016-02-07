@@ -37,6 +37,7 @@ bool isInteger(const std::string token)
     auto begin = token.begin();
     auto end   = token.end();
     if (begin != end && *begin == '-') ++begin;
+    if (begin == end) return false;
     return std::all_of(begin, end, ::isdigit);
 }
 

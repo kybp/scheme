@@ -53,8 +53,16 @@ struct SchemeFunction {
         {}
 };
 
+class scheme_error {
+    const std::string what_;
+public:
+    scheme_error(std::string what) : what_(what) {}
+    std::string what() { return what_; }
+};
+
 std::deque<std::string> tokenize(const std::string string);
 SchemeExpr parse(const std::string& program);
 SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env);
+bool isInteger(const std::string token);
 
 #endif
