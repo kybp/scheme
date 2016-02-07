@@ -3,7 +3,7 @@
 #include "eval.hh"
 #include "builtins.hh"
 #include "parser.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 int main()
 {

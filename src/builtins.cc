@@ -5,7 +5,7 @@
 #include <boost/variant.hpp>
 #include "builtins.hh"
 #include "eval.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 SchemeExpr eval(SchemeExpr e)
 {

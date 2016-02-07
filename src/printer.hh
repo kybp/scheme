@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string>
 #include <boost/variant.hpp>
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 class stringVisitor : public boost::static_visitor<SchemeExpr> {
     std::ostringstream& os;

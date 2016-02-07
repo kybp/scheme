@@ -2,7 +2,7 @@
 #include <string>
 #include "gtest/gtest.h"
 #include "parser.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 TEST(TokenizerTest, EmptyInputGivesNoTokens) {
     ASSERT_TRUE(tokenize("").empty());

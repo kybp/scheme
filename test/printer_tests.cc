@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "parser.hh"
 #include "printer.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 TEST(PrintTest, PrintInteger) {
     std::ostringstream s;

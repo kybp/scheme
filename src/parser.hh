@@ -4,7 +4,7 @@
 #include <deque>
 #include <string>
 #include "printer.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 std::deque<std::string> tokenize(const std::string string);
 SchemeExpr parse(const std::string& program);

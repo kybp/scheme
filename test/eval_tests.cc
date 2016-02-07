@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "eval.hh"
-#include "scheme.hh"
+#include "scheme_types.hh"
 
 TEST(EvalTest, EvalSelfEvaluating) {
     SchemeEnvironment env;

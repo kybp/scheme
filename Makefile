@@ -6,11 +6,11 @@ TEST_DIR = test
 scheme: $(SRC_DIR)/repl.cc parser.o builtins.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-parser.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
+parser.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/parser.cc
 
-builtins.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/builtins.hh $(SRC_DIR)/eval.hh\
-	    $(SRC_DIR)/builtins.cc
+builtins.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/builtins.hh\
+	    $(SRC_DIR)/eval.hh $(SRC_DIR)/builtins.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/builtins.cc
 
 # start of gtest stuffa
@@ -53,7 +53,7 @@ gtest_main.a : gtest-all.o gtest_main.o
 
 TESTS += parser_tests
 parser_tests.o: $(TEST_DIR)/parser_tests.cc\
-	        $(SRC_DIR)/parser.hh $(SRC_DIR)/scheme.hh\
+	        $(SRC_DIR)/parser.hh $(SRC_DIR)/scheme_types.hh\
 	        $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/parser_tests.cc
 
@@ -62,7 +62,7 @@ parser_tests: parser.o parser_tests.o gtest_main.a
 
 TESTS += eval_tests
 eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
-	      $(SRC_DIR)/scheme.hh\
+	      $(SRC_DIR)/scheme_types.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
@@ -70,7 +70,7 @@ eval_tests: parser.o builtins.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += printer_tests
-printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme.hh\
+printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
@@ -78,7 +78,7 @@ printer_tests: parser.o printer_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += builtin_tests
-builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme.hh\
+builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
