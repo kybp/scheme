@@ -4,7 +4,6 @@
 #include <deque>
 #include <map>
 #include <string>
-#include <boost/optional.hpp>
 #include <boost/variant.hpp>
 
 struct SchemeFunction;
@@ -22,23 +21,11 @@ inline int intValue(SchemeExpr e)
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
 
 struct SchemeFunction {
-    std::function<SchemeExpr(std::initializer_list<SchemeExpr>)> fn;
-    boost::optional<int> numArgs;
+    std::function<SchemeExpr(std::vector<SchemeExpr>)> fn;
     SchemeEnvironment env;
-    SchemeFunction(std::function<
-                   SchemeExpr(std::initializer_list<SchemeExpr>)> fn)
+    SchemeFunction(std::function<SchemeExpr(std::vector<SchemeExpr>)> fn)
         : fn(fn), env()
         {}
-    // SchemeFunction(std::function<
-    //                SchemeExpr(std::initializer_list<SchemeExpr>)> fn,
-    //                SchemeEnvironment env)
-    //     : fn(fn), env(env)
-    //     {}
-    // SchemeFunction(std::function<
-    //                SchemeExpr(std::initializer_list<SchemeExpr>)> fn,
-    //                int numArgs, SchemeEnvironment env)
-    //     : fn(fn), numArgs(numArgs), env(env)
-    //     {}
 };
 
 std::deque<std::string> tokenize(const std::string string);

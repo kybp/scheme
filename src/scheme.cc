@@ -72,12 +72,12 @@ SchemeExpr parse(const std::string& program)
     return readFromTokens(tokens);
 }
 
-SchemeExpr scmAbs(std::initializer_list<SchemeExpr> args)
+SchemeExpr scmAbs(std::vector<SchemeExpr> args)
 {
-    return { std::abs(intValue(*args.begin())) };
+    return { std::abs(intValue(args.front())) };
 }
 
-SchemeExpr scmAdd(std::initializer_list<SchemeExpr> args)
+SchemeExpr scmAdd(std::vector<SchemeExpr> args)
 {
     std::vector<int> ints;
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
@@ -93,3 +93,50 @@ SchemeEnvironment standardEnvironment()
 
     return env;
 }
+
+class eval : public boost::static_visitor<SchemeExpr> {
+    mutable SchemeEnvironment env;
+public:
+    eval(SchemeEnvironment env) : env(env) {}
+
+    SchemeExpr operator()(int i) const {
+        return { i };
+    }
+
+    SchemeExpr operator()(const std::string& symbol) const {
+        return { env[symbol] };
+    }
+
+    SchemeExpr operator()(const std::shared_ptr<SchemeFunction>& fn) const {
+        return { fn };
+    }
+
+    SchemeExpr operator()(const std::deque<SchemeExpr>& list) const {
+        const auto& car = boost::get<std::string>(list[0]);
+        if (car == "quote") {
+            return { list[1] };
+        }
+        else if (car == "if") {
+            (void)boost::apply_visitor(eval(env), list[1]);
+            if (true) { // how do I test a SchemeExpr ?
+                return list[2];
+            } else {
+                return list[3];
+            }
+        } else if (car == "define") {
+            auto var = boost::get<std::string>(list[1]);
+            env[var] = boost::apply_visitor(eval(env), list[2]);
+            return list[1];
+        } else {
+            auto car = boost::apply_visitor(eval(env), list[0]);
+            auto proc = boost::get<std::shared_ptr<SchemeFunction>>(car);
+            auto evalArg = [this](SchemeExpr e)
+                { return boost::apply_visitor(eval(env), e); };
+            std::vector<SchemeExpr> args;
+            std::transform(list.begin() + 1, list.end(),
+                           back_inserter(args), evalArg );
+            return proc->fn(args);
+        }
+    }
+    
+};
