@@ -61,6 +61,10 @@ SchemeExpr readFromTokens(std::deque<std::string>& tokens)
         throw std::runtime_error("unexpected ')'");
     } else if (isInteger(token)) {
         return { std::atoi(token.c_str()) };
+    } else if (token == "#t") {
+        return { true };
+    } else if (token == "#f") {
+        return { false };
     } else {
         return { token };
     }
@@ -103,6 +107,10 @@ public:
         return { i };
     }
 
+    SchemeExpr operator()(bool b) const {
+        return { b };
+    }
+
     SchemeExpr operator()(const std::string& symbol) const {
         return { env[symbol] };
     }
@@ -117,8 +125,8 @@ public:
             return { list[1] };
         }
         else if (car == "if") {
-            (void)boost::apply_visitor(evalVisitor(env), list[1]);
-            if (true) { // how do I test a SchemeExpr ?
+            auto pred = boost::apply_visitor(evalVisitor(env), list[1]);
+            if (boolVal(pred)) {
                 return list[2];
             } else {
                 return list[3];
@@ -158,6 +166,11 @@ public:
 
     std::string operator()(int i) const {
         os << i;
+        return os.str();
+    }
+
+    std::string operator()(bool b) const {
+        os << (b ? "#t" : "#f");
         return os.str();
     }
 

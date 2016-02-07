@@ -11,19 +11,24 @@
 struct SchemeFunction;
 
 typedef boost::make_recursive_variant<
-    int, std::shared_ptr<SchemeFunction>, std::string,
+    int, std::shared_ptr<SchemeFunction>, std::string, bool,
     std::deque<boost::recursive_variant_>
     >::type SchemeExpr;
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 
-inline int intValue(SchemeExpr e)
+inline int intValue(const SchemeExpr& e)
 {
     return boost::get<int>(e);
 }
 
-inline std::string stringVal(SchemeExpr e)
+inline std::string stringVal(const SchemeExpr& e)
 {
     return boost::get<std::string>(e);
+}
+
+inline bool boolVal(const SchemeExpr& e)
+{
+    return boost::get<bool>(e);
 }
 
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
