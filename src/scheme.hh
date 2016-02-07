@@ -16,19 +16,31 @@ typedef boost::make_recursive_variant<
     >::type SchemeExpr;
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 
+typedef std::deque<SchemeExpr> SchemeList;
+
 inline int intValue(const SchemeExpr& e)
 {
     return boost::get<int>(e);
 }
 
-inline std::string stringVal(const SchemeExpr& e)
+inline std::string stringValue(const SchemeExpr& e)
 {
     return boost::get<std::string>(e);
 }
 
-inline bool boolVal(const SchemeExpr& e)
+inline bool boolValue(const SchemeExpr& e)
 {
     return boost::get<bool>(e);
+}
+
+inline std::shared_ptr<SchemeFunction> functionPointer(const SchemeExpr& e)
+{
+    return boost::get<std::shared_ptr<SchemeFunction>>(e);
+}
+
+inline SchemeList listValue(const SchemeExpr& e)
+{
+    return boost::get<std::deque<SchemeExpr>>(e);
 }
 
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;

@@ -18,53 +18,53 @@ TEST(TokenizerTest, ParensAreTokens) {
 }
 
 TEST(ParserTest, ParsesInteger) {
-    ASSERT_EQ(3, boost::get<int>(parse("3")));
+    ASSERT_EQ(3, intValue(parse("3")));
 }
 
 TEST(ParserTest, ParseNegativeInteger) {
-    ASSERT_EQ(-1, boost::get<int>(parse("-1")));
+    ASSERT_EQ(-1, intValue(parse("-1")));
 }
 
 TEST(ParserTest, ParseTrue) {
-    ASSERT_EQ(true, boolVal(parse("#t")));
+    ASSERT_EQ(true, boolValue(parse("#t")));
 }
 
 TEST(ParserTest, ParseFalse) {
-    ASSERT_EQ(false, boolVal(parse("#f")));
+    ASSERT_EQ(false, boolValue(parse("#f")));
 }
 
 TEST(ParserTest, ParsesSymbol) {
-    ASSERT_EQ("foo", boost::get<std::string>(parse("foo")));
+    ASSERT_EQ("foo", stringValue(parse("foo")));
 }
 
 TEST(ParserTest, ParseEmptyList) {
-    ASSERT_TRUE(boost::get<std::deque<SchemeExpr>>(parse("()")).empty());
+    ASSERT_TRUE(listValue(parse("()")).empty());
 }
 
 TEST(ParserTest, ParseOneElementList) {
-    auto actual = boost::get<std::deque<SchemeExpr>>(parse("(3)"));
+    auto actual = listValue(parse("(3)"));
     ASSERT_EQ(1, actual.size());
-    ASSERT_EQ(3, boost::get<int>(actual.front()));
+    ASSERT_EQ(3, intValue(actual.front()));
 }
 
 TEST(ParserTest, ParseNestedList) {
-    auto actual = boost::get<std::deque<SchemeExpr>>(parse("(length (1 2))"));
+    auto actual = listValue(parse("(length (1 2))"));
     ASSERT_EQ(2, actual.size());
-    ASSERT_EQ("length", boost::get<std::string>(actual[0]));
-    auto sublist = boost::get<std::deque<SchemeExpr>>(actual[1]);
+    ASSERT_EQ("length", stringValue(actual[0]));
+    auto sublist = listValue(actual[1]);
     ASSERT_EQ(2, sublist.size());
-    ASSERT_EQ(1, boost::get<int>(sublist[0]));
-    ASSERT_EQ(2, boost::get<int>(sublist[1]));
+    ASSERT_EQ(1, intValue(sublist[0]));
+    ASSERT_EQ(2, intValue(sublist[1]));
 }
 
 TEST(ParserTest, ParseDoublyNestedList) {
-    auto first = boost::get<std::deque<SchemeExpr>>(parse("(1 (2 (3)))"));
+    auto first = listValue(parse("(1 (2 (3)))"));
     ASSERT_EQ(2, first.size());
-    ASSERT_EQ(1, boost::get<int>(first[0]));
-    auto second = boost::get<std::deque<SchemeExpr>>(first[1]);
+    ASSERT_EQ(1, intValue(first[0]));
+    auto second = listValue(first[1]);
     ASSERT_EQ(2, second.size());
-    ASSERT_EQ(2, boost::get<int>(second[0]));
-    auto third = boost::get<std::deque<SchemeExpr>>(second[1]);
+    ASSERT_EQ(2, intValue(second[0]));
+    auto third = listValue(second[1]);
     ASSERT_EQ(1, third.size());
-    ASSERT_EQ(3, boost::get<int>(third[0]));
+    ASSERT_EQ(3, intValue(third[0]));
 }

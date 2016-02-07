@@ -120,24 +120,24 @@ public:
     }
 
     SchemeExpr operator()(const std::deque<SchemeExpr>& list) const {
-        const auto& car = boost::get<std::string>(list[0]);
+        const auto& car = stringValue(list[0]);
         if (car == "quote") {
             return { list[1] };
         }
         else if (car == "if") {
             auto pred = boost::apply_visitor(evalVisitor(env), list[1]);
-            if (boolVal(pred)) {
+            if (boolValue(pred)) {
                 return list[2];
             } else {
                 return list[3];
             }
         } else if (car == "define") {
-            auto var = boost::get<std::string>(list[1]);
+            auto var = stringValue(list[1]);
             env[var] = boost::apply_visitor(evalVisitor(env), list[2]);
             return list[1];
         } else {
             auto car = boost::apply_visitor(evalVisitor(env), list[0]);
-            auto proc = boost::get<std::shared_ptr<SchemeFunction>>(car);
+            auto proc = functionPointer(car);
             auto evalVisitorArg = [this](SchemeExpr e)
                 { return boost::apply_visitor(evalVisitor(env), e); };
             std::vector<SchemeExpr> args;
