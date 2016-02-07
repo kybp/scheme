@@ -150,3 +150,44 @@ SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env)
 {
     return boost::apply_visitor(evalVisitor(env), e);
 }
+
+class stringVisitor : public boost::static_visitor<SchemeExpr> {
+    std::ostringstream& os;
+public:
+    stringVisitor(std::ostringstream& os) : os(os) {}
+
+    std::string operator()(int i) const {
+        os << i;
+        return os.str();
+    }
+
+    std::string operator()(const std::string& symbol) const {
+        return symbol;
+    }
+
+    std::string operator()(const std::shared_ptr<SchemeFunction>&) const {
+        os << "<function>";
+        return os.str();
+    }
+
+    std::string operator()(const std::deque<SchemeExpr>& list) const {
+        os << "(";
+        if (list.size() == 1) {
+            boost::apply_visitor(stringVisitor(os), list[0]);
+        } else {
+            for (const auto& x : list) {
+                os << " ";
+                boost::apply_visitor(stringVisitor(os), x);
+            }
+        }
+        os << ")";
+        return os.str();
+    }
+};
+
+std::ostream& operator<<(std::ostream& os, const SchemeExpr& e)
+{
+    std::ostringstream ss;
+    return os << boost::get<std::string>(
+        boost::apply_visitor(stringVisitor(ss), e));
+}

@@ -2,6 +2,7 @@
 #define SCHEME_HH
 
 #include <deque>
+#include <iostream>
 #include <map>
 #include <string>
 #include <boost/variant.hpp>
@@ -12,6 +13,7 @@ typedef boost::make_recursive_variant<
     int, std::shared_ptr<SchemeFunction>, std::string,
     std::deque<boost::recursive_variant_>
     >::type SchemeExpr;
+std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 
 inline int intValue(SchemeExpr e)
 {

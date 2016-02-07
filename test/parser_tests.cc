@@ -48,3 +48,9 @@ TEST(ParserTest, ParseNestedList) {
     ASSERT_EQ(1, boost::get<int>(sublist[0]));
     ASSERT_EQ(2, boost::get<int>(sublist[1]));
 }
+
+TEST(PrintTest, PrintInteger) {
+    std::ostringstream s;
+    s << parse("3");
+    ASSERT_EQ("3", s.str());
+}
