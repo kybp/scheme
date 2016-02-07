@@ -23,5 +23,7 @@ std::vector<std::string> tokenize(std::string string)
         } else currentToken << c;
     }
 
+    if (!currentToken.str().empty()) tokens.push_back(currentToken.str());
+
     return tokens;
 }
