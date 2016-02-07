@@ -15,25 +15,31 @@ public:
     evalVisitor(SchemeEnvironment& env) : env(env) {}
 
     SchemeExpr operator()(int i) const {
-        return { i };
+        return i;
     }
 
     SchemeExpr operator()(bool b) const {
-        return { b };
+        return b;
     }
 
     SchemeExpr operator()(const std::string& symbol) const {
-        return { env[symbol] };
+        if (env.find(symbol) == env.end()) {
+            std::ostringstream error;
+            error << "Undefined symbol: " << symbol;
+            throw scheme_error(error.str());
+        } else {
+            return env[symbol];
+        }
     }
 
     SchemeExpr operator()(const std::shared_ptr<SchemeFunction>& fn) const {
-        return { fn };
+        return fn;
     }
 
     SchemeExpr operator()(const std::deque<SchemeExpr>& list) const {
         const auto& car = stringValue(list[0]);
         if (car == "quote") {
-            return { list[1] };
+            return list[1];
         }
         else if (car == "if") {
             auto pred = boost::apply_visitor(evalVisitor(env), list[1]);

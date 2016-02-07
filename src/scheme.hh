@@ -4,6 +4,7 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <boost/variant.hpp>
@@ -18,9 +19,23 @@ std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 
 typedef std::deque<SchemeExpr> SchemeList;
 
+class scheme_error : public std::exception {
+    const std::string what_;
+public:
+    scheme_error(const std::string& what) : what_(what) {}
+    virtual const char *what() const noexcept override
+        { return what_.c_str(); }
+};
+
 inline int intValue(const SchemeExpr& e)
 {
-    return boost::get<int>(e);
+    try {
+        return boost::get<int>(e);
+    } catch (boost::bad_get&) {
+        std::ostringstream error;
+        error << "Integer expected, got " << e;
+        throw scheme_error(error.str());
+    }
 }
 
 inline std::string stringValue(const SchemeExpr& e)
@@ -51,13 +66,6 @@ struct SchemeFunction {
     SchemeFunction(std::function<SchemeExpr(std::vector<SchemeExpr>)> fn)
         : fn(fn), env()
         {}
-};
-
-class scheme_error {
-    const std::string what_;
-public:
-    scheme_error(std::string what) : what_(what) {}
-    std::string what() { return what_; }
 };
 
 std::deque<std::string> tokenize(const std::string string);

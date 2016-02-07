@@ -29,11 +29,16 @@ SchemeExpr scmSub(SchemeArgs args)
 {
     if (args.empty()) {
         throw scheme_error("- requires at least one argument, passed 0");
+    } else if (args.size() == 1) {
+        return { -intValue(args.front()) };
+    } else {
+        auto minus = [](int x, int y) { return x - y; };
+        std::vector<int> ints;
+        std::transform(args.begin(), args.end(), back_inserter(ints),
+                       intValue);
+        return { std::accumulate(ints.begin() + 1, ints.end(),
+                                 ints.front(), minus) };
     }
-    auto minus = [](int x, int y) { return x - y; };
-    std::vector<int> ints;
-    std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
-    return { std::accumulate(ints.begin(), ints.end(), 0, minus) };
 }
 
 SchemeEnvironment standardEnvironment()
