@@ -5,7 +5,7 @@
 int main()
 {
     std::string line;
-    SchemeEnvironment env;
+    auto env = standardEnvironment();
 
     do {
         try {
