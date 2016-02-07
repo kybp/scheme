@@ -1,6 +1,6 @@
 #include <sstream>
 #include "gtest/gtest.h"
-#include "../src/scheme.hh"
+#include "scheme.hh"
 
 TEST(PrintTest, PrintInteger) {
     std::ostringstream s;

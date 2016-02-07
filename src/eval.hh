@@ -7,6 +7,8 @@
 #include <boost/variant.hpp>
 #include "scheme.hh"
 
+typedef std::vector<SchemeExpr> SchemeArgs;
+
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
     SchemeEnvironment& env;
 public:
@@ -49,7 +51,7 @@ public:
             auto proc = functionPointer(car);
             auto evalVisitorArg = [this](SchemeExpr e)
                 { return boost::apply_visitor(evalVisitor(env), e); };
-            std::vector<SchemeExpr> args;
+            SchemeArgs args;
             std::transform(list.begin() + 1, list.end(),
                            back_inserter(args), evalVisitorArg );
             return proc->fn(args);

@@ -1,7 +1,6 @@
 #include <algorithm> // for std::transform, std::all_of
-#include <cctype>    // for isdigit
+#include <cctype>    // for std::isdigit
 #include <deque>
-#include <iterator>  // for std::back_inserter
 #include <string>
 #include <sstream>
 #include <vector>

@@ -3,22 +3,15 @@ CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
 
-TESTS = parser_tests printer_tests eval_tests
-
 scheme: $(SRC_DIR)/repl.cc scheme.o builtins.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 scheme.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/scheme.cc
-	$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/scheme.cc
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/scheme.cc
 
 builtins.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/builtins.hh $(SRC_DIR)/eval.hh\
 	    $(SRC_DIR)/builtins.cc
-	$(CXX) $(CPPFLAGS) -c $(SRC_DIR)/builtins.cc
-
-tests: $(TESTS)
-
-clean:
-	rm -f $(TESTS) gtest.a gtest_main.a *.o scheme
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/builtins.cc
 
 # start of gtest stuffa
 
@@ -56,23 +49,42 @@ gtest_main.a : gtest-all.o gtest_main.o
 
 # End of gtest stuff
 
+# start of our tests
+
+TESTS += parser_tests
 parser_tests.o: $(TEST_DIR)/parser_tests.cc $(SRC_DIR)/scheme.hh\
 	        $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/parser_tests.cc
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/parser_tests.cc
 
 parser_tests: scheme.o parser_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/scheme.hh\
+TESTS += eval_tests
+eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
+	      $(SRC_DIR)/scheme.hh\
 	      $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/eval_tests.cc
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
 eval_tests: scheme.o builtins.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
+TESTS += printer_tests
 printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme.hh\
 	         $(GTEST_HEADERS)
-	$(CXX) $(CPPFLAGS) -c $(TEST_DIR)/printer_tests.cc
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
 printer_tests: scheme.o printer_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
+
+TESTS += builtin_tests
+builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme.hh\
+	         $(GTEST_HEADERS)
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
+
+builtin_tests: scheme.o builtins.o builtin_tests.o gtest_main.a
+	$(CXX) $(CPPFLAGS) $^ -o $@
+
+tests: $(TESTS)
+
+clean:
+	rm -f $(TESTS) gtest.a gtest_main.a *.o scheme
