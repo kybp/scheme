@@ -11,7 +11,7 @@ scheme: $(SRC_DIR)/repl.cc scheme.o
 tests: $(TESTS)
 
 clean:
-	rm -f $(TESTS) gtest.a gtest_main.a *.o
+	rm -f $(TESTS) gtest.a gtest_main.a *.o scheme
 
 # start of gtest stuffa
 
