@@ -15,7 +15,7 @@ builtins.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/builtins.hh\
 
 # start of gtest stuffa
 
-GTEST_DIR = googletest
+GTEST_DIR = $(TEST_DIR)/googletest
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # All Google Test headers.  Usually you shouldn't change this
