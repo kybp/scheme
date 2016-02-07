@@ -1,5 +1,6 @@
 #include <algorithm>
-#include <cctype>
+#include <cctype>  // for isdigit
+#include <cstdlib> // for abs
 #include <deque>
 #include <iterator>
 #include <numeric>
@@ -36,7 +37,10 @@ std::deque<std::string> tokenize(const std::string string)
 
 bool isInteger(const std::string token)
 {
-    return std::all_of(token.begin(), token.end(), ::isdigit);
+    auto begin = token.begin();
+    auto end   = token.end();
+    if (begin != end && *begin == '-') ++begin;
+    return std::all_of(begin, end, ::isdigit);
 }
 
 SchemeExpr readFromTokens(std::deque<std::string>& tokens)
@@ -68,17 +72,24 @@ SchemeExpr parse(const std::string& program)
     return readFromTokens(tokens);
 }
 
-SchemeExpr add(std::initializer_list<SchemeExpr> args)
+SchemeExpr scmAbs(std::initializer_list<SchemeExpr> args)
+{
+    return { std::abs(intValue(*args.begin())) };
+}
+
+SchemeExpr scmAdd(std::initializer_list<SchemeExpr> args)
 {
     std::vector<int> ints;
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
     return { std::accumulate(ints.begin(), ints.end(), 0) };
 }
 
-SchemeEnvironment standardEnvironment() {
+SchemeEnvironment standardEnvironment()
+{
     SchemeEnvironment env;
 
-    env["+"] = SchemeExpr(std::make_shared<SchemeFunction>(add));
+    env["+"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAdd));
+    env["abs"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAbs));
 
     return env;
 }
