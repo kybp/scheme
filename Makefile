@@ -3,11 +3,11 @@ CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
 
-scheme: $(SRC_DIR)/repl.cc scheme.o builtins.o
+scheme: $(SRC_DIR)/repl.cc parser.o builtins.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-scheme.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/scheme.cc
-	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/scheme.cc
+parser.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/parser.cc
 
 builtins.o: $(SRC_DIR)/scheme.hh $(SRC_DIR)/builtins.hh $(SRC_DIR)/eval.hh\
 	    $(SRC_DIR)/builtins.cc
@@ -52,11 +52,12 @@ gtest_main.a : gtest-all.o gtest_main.o
 # start of our tests
 
 TESTS += parser_tests
-parser_tests.o: $(TEST_DIR)/parser_tests.cc $(SRC_DIR)/scheme.hh\
+parser_tests.o: $(TEST_DIR)/parser_tests.cc\
+	        $(SRC_DIR)/parser.hh $(SRC_DIR)/scheme.hh\
 	        $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/parser_tests.cc
 
-parser_tests: scheme.o parser_tests.o gtest_main.a
+parser_tests: parser.o parser_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += eval_tests
@@ -65,7 +66,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
-eval_tests: scheme.o builtins.o eval_tests.o gtest_main.a
+eval_tests: parser.o builtins.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += printer_tests
@@ -73,7 +74,7 @@ printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
-printer_tests: scheme.o printer_tests.o gtest_main.a
+printer_tests: parser.o printer_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += builtin_tests
@@ -81,7 +82,7 @@ builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
-builtin_tests: scheme.o builtins.o builtin_tests.o gtest_main.a
+builtin_tests: parser.o builtins.o builtin_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 tests: $(TESTS)

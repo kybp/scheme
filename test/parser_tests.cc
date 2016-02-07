@@ -1,6 +1,7 @@
 #include <deque>
 #include <string>
 #include "gtest/gtest.h"
+#include "parser.hh"
 #include "scheme.hh"
 
 TEST(TokenizerTest, EmptyInputGivesNoTokens) {
@@ -26,6 +27,7 @@ TEST(ParserTest, ParseNegativeInteger) {
 }
 
 TEST(ParserTest, MinusSignIsNotNumber) {
+    bool isInteger(const std::string token);
     ASSERT_FALSE(isInteger("-"));
 }
 

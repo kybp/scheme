@@ -1,5 +1,7 @@
 #include <sstream>
 #include "gtest/gtest.h"
+#include "parser.hh"
+#include "printer.hh"
 #include "scheme.hh"
 
 TEST(PrintTest, PrintInteger) {

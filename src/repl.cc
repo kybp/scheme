@@ -2,6 +2,7 @@
 #include <string>
 #include "eval.hh"
 #include "builtins.hh"
+#include "parser.hh"
 #include "scheme.hh"
 
 int main()

@@ -1,31 +1,13 @@
-#ifndef SCHEME_HH
-#define SCHEME_HH
+#ifndef PARSER_HH
+#define PARSER_HH
 
 #include <deque>
-#include <iostream>
-#include <map>
-#include <sstream>
 #include <string>
-#include <vector>
-#include <boost/variant.hpp>
+#include "printer.hh"
+#include "scheme.hh"
 
-struct SchemeFunction;
-
-typedef boost::make_recursive_variant<
-    int, std::shared_ptr<SchemeFunction>, std::string, bool,
-    std::deque<boost::recursive_variant_>
-    >::type SchemeExpr;
-std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
-
-typedef std::deque<SchemeExpr> SchemeList;
-
-class scheme_error : public std::exception {
-    const std::string what_;
-public:
-    scheme_error(const std::string& what) : what_(what) {}
-    virtual const char *what() const noexcept override
-        { return what_.c_str(); }
-};
+std::deque<std::string> tokenize(const std::string string);
+SchemeExpr parse(const std::string& program);
 
 inline int intValue(const SchemeExpr& e)
 {
@@ -81,20 +63,5 @@ inline SchemeList listValue(const SchemeExpr& e)
         throw scheme_error(error.str());
     }
 }
-
-typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
-
-struct SchemeFunction {
-    std::function<SchemeExpr(std::vector<SchemeExpr>)> fn;
-    SchemeEnvironment env;
-    SchemeFunction(std::function<SchemeExpr(std::vector<SchemeExpr>)> fn)
-        : fn(fn), env()
-        {}
-};
-
-std::deque<std::string> tokenize(const std::string string);
-SchemeExpr parse(const std::string& program);
-SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env);
-bool isInteger(const std::string token);
 
 #endif

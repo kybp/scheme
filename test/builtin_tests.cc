@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "builtins.hh"
+#include "parser.hh"
 #include "scheme.hh"
 
 // +

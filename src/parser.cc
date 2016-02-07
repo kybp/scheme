@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <boost/variant.hpp>
+#include "parser.hh"
 #include "scheme.hh"
 
 std::deque<std::string> tokenize(const std::string string)
@@ -43,28 +44,27 @@ bool isInteger(const std::string token)
 
 SchemeExpr readFromTokens(std::deque<std::string>& tokens)
 {
-    if (tokens.empty()) {
-        throw std::runtime_error("unexpected EOF while reading");
-    }
+    if (tokens.empty()) throw scheme_error("unexpected EOF while reading");
+
     std::string token = tokens.front();
     tokens.pop_front();
     if (token == "(") {
-        std::deque<SchemeExpr> list;
+        SchemeList list;
         while (tokens.front() != ")") {
             list.push_back(readFromTokens(tokens));
         }
         tokens.pop_front();     // remove ")"
-        return { list };
+        return list;
     } else if (token == ")") {
-        throw std::runtime_error("unexpected ')'");
+        throw scheme_error("unexpected ')'");
     } else if (isInteger(token)) {
-        return { std::atoi(token.c_str()) };
+        return std::atoi(token.c_str());
     } else if (token == "#t") {
-        return { true };
+        return true;
     } else if (token == "#f") {
-        return { false };
+        return false;
     } else {
-        return { token };
+        return token;
     }
 }
 
@@ -72,56 +72,4 @@ SchemeExpr parse(const std::string& program)
 {
     auto tokens = tokenize(program);
     return readFromTokens(tokens);
-}
-
-class stringVisitor : public boost::static_visitor<SchemeExpr> {
-    std::ostringstream& os;
-public:
-    stringVisitor(std::ostringstream& os) : os(os) {}
-
-    std::string operator()(int i) const {
-        os << i;
-        return os.str();
-    }
-
-    std::string operator()(bool b) const {
-        os << (b ? "#t" : "#f");
-        return os.str();
-    }
-
-    std::string operator()(const std::string& symbol) const {
-        os << symbol;
-        return symbol;
-    }
-
-    std::string operator()(const std::shared_ptr<SchemeFunction>&) const {
-        os << "<function>";
-        return os.str();
-    }
-
-    std::string operator()(const std::deque<SchemeExpr>& list) const {
-        os << "(";
-        switch (list.size()) {
-        case 0:
-            break;
-        case 1:
-            boost::apply_visitor(stringVisitor(os), list[0]);
-            break;
-        default:
-            os << list.front();
-            for (auto it = list.cbegin() + 1; it != list.cend(); ++it) {
-                os << " ";
-                boost::apply_visitor(stringVisitor(os), *it);
-            }
-        }
-        os << ")";
-        return os.str();
-    }
-};
-
-std::ostream& operator<<(std::ostream& os, const SchemeExpr& e)
-{
-    std::ostringstream ss;
-    boost::apply_visitor(stringVisitor(ss), e);
-    return os << ss.str();
 }

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <boost/variant.hpp>
+#include "parser.hh"
 #include "scheme.hh"
 
 typedef std::vector<SchemeExpr> SchemeArgs;
