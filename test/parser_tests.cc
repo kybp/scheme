@@ -21,6 +21,10 @@ TEST(ParserTest, ParsesInteger) {
     ASSERT_EQ(3, boost::get<int>(parse("3")));
 }
 
+TEST(ParserTest, ParseNegativeInteger) {
+    ASSERT_EQ(-1, boost::get<int>(parse("-1")));
+}
+
 TEST(ParserTest, ParsesSymbol) {
     ASSERT_EQ("foo", boost::get<std::string>(parse("foo")));
 }

@@ -95,9 +95,9 @@ SchemeEnvironment standardEnvironment()
 }
 
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
-    mutable SchemeEnvironment env;
+    SchemeEnvironment& env;
 public:
-    evalVisitor(SchemeEnvironment env = standardEnvironment()) : env(env) {}
+    evalVisitor(SchemeEnvironment& env) : env(env) {}
 
     SchemeExpr operator()(int i) const {
         return { i };
@@ -142,10 +142,11 @@ public:
 
 SchemeExpr eval(SchemeExpr e)
 {
-    return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
+    SchemeEnvironment env = standardEnvironment();
+    return boost::apply_visitor(evalVisitor(env), e);
 }
 
-SchemeExpr eval(SchemeExpr e, SchemeEnvironment env = standardEnvironment())
+SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env)
 {
     return boost::apply_visitor(evalVisitor(env), e);
 }

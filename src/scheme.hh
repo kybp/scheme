@@ -19,6 +19,7 @@ inline int intValue(SchemeExpr e)
 }
 
 typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
+SchemeEnvironment standardEnvironment();
 
 struct SchemeFunction {
     std::function<SchemeExpr(std::vector<SchemeExpr>)> fn;
@@ -31,6 +32,6 @@ struct SchemeFunction {
 std::deque<std::string> tokenize(const std::string string);
 SchemeExpr parse(const std::string& program);
 SchemeExpr eval(SchemeExpr e);
-SchemeExpr eval(SchemeExpr e, SchemeEnvironment env);
+SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env);
 
 #endif
