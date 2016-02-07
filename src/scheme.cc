@@ -1,8 +1,11 @@
 #include <algorithm>
 #include <cctype>
+#include <deque>
+#include <iterator>
+#include <numeric>
 #include <string>
 #include <sstream>
-#include <deque>
+#include <vector>
 #include <boost/variant.hpp>
 #include "scheme.hh"
 
@@ -63,4 +66,19 @@ SchemeExpr parse(const std::string& program)
 {
     auto tokens = tokenize(program);
     return readFromTokens(tokens);
+}
+
+SchemeExpr add(std::initializer_list<SchemeExpr> args)
+{
+    std::vector<int> ints;
+    std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
+    return { std::accumulate(ints.begin(), ints.end(), 0) };
+}
+
+SchemeEnvironment standardEnvironment() {
+    SchemeEnvironment env;
+
+    env["+"] = SchemeExpr(std::make_shared<SchemeFunction>(add));
+
+    return env;
 }
