@@ -31,6 +31,16 @@ TEST(SubtractionTests, BasicSubtraction) {
     ASSERT_EQ(1, intValue(eval(parse("(- 3 2)"))));
 }
 
+// *
+
+TEST(MultiplicationTest, Identity) {
+    ASSERT_EQ(1, intValue(eval(parse("(*)"))));
+}
+
+TEST(MultiplicationTest, BasicMultiplication) {
+    ASSERT_EQ(6, intValue(eval(parse("(* 1 2 3)"))));
+}
+
 // abs
 
 TEST(AbsTests, AbsPositiveInput) {
