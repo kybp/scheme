@@ -37,12 +37,18 @@ public:
         return fn;
     }
 
-    SchemeExpr operator()(const std::deque<SchemeExpr>& list) const {
+    SchemeExpr operator()(const SchemeList& list) const {
         const auto& car = stringValue(list[0]);
         if (car == "quote") {
             return list[1];
         }
         else if (car == "if") {
+            if (list.size() != 4) {
+                std::ostringstream error;
+                error << "if requires exactly 3 arguments, ";
+                error << "passed " << list.size();
+                throw scheme_error(error);
+            }
             auto pred = boost::apply_visitor(evalVisitor(env), list[1]);
             if (boolValue(pred)) {
                 return list[2];

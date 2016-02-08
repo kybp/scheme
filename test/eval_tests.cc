@@ -17,3 +17,20 @@ TEST(EvalTest, DefineVariable) {
     eval(parse("(define x 2)"), env);
     ASSERT_EQ(2, intValue(eval(parse("x"), env)));
 }
+
+TEST(IfTest, LessThanTwoArgsThrows) {
+    SchemeEnvironment env;
+    ASSERT_THROW(eval(parse("(if)"),      env), scheme_error);
+    ASSERT_THROW(eval(parse("(if #t)"),   env), scheme_error);
+    ASSERT_THROW(eval(parse("(if #t 1)"), env), scheme_error);
+}
+
+TEST(IfTest, MoreThanTwoArgsThrows) {
+    SchemeEnvironment env;
+    ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
+}
+
+TEST(IfTest, NonBoolPredicateThrows) {
+    SchemeEnvironment env;
+    ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
+}
