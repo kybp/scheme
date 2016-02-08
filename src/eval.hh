@@ -27,7 +27,7 @@ public:
         if (env.find(symbol) == env.end()) {
             std::ostringstream error;
             error << "Undefined symbol: " << symbol;
-            throw scheme_error(error.str());
+            throw scheme_error(error);
         } else {
             return env[symbol];
         }

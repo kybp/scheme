@@ -16,7 +16,7 @@ inline int intValue(const SchemeExpr& e)
     } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "Integer expected, got " << e;
-        throw scheme_error(error.str());
+        throw scheme_error(error);
     }
 }
 
@@ -27,7 +27,7 @@ inline std::string stringValue(const SchemeExpr& e)
     } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "Symbol expected, got " << e;
-        throw scheme_error(error.str());
+        throw scheme_error(error);
     }
 }
 
@@ -38,7 +38,7 @@ inline bool boolValue(const SchemeExpr& e)
     } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "Boolean expected, got " << e;
-        throw scheme_error(error.str());
+        throw scheme_error(error);
     }
 }
 
@@ -49,7 +49,7 @@ inline std::shared_ptr<SchemeFunction> functionPointer(const SchemeExpr& e)
     } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "Function expected, got " << e;
-        throw scheme_error(error.str());
+        throw scheme_error(error);
     }
 }
 
@@ -60,7 +60,7 @@ inline SchemeList listValue(const SchemeExpr& e)
     } catch (const boost::bad_get&) {
         std::ostringstream error;
         error << "List expected, got " << e;
-        throw scheme_error(error.str());
+        throw scheme_error(error);
     }
 }
 

@@ -7,25 +7,25 @@
 #include "eval.hh"
 #include "scheme_types.hh"
 
-SchemeExpr eval(SchemeExpr e)
+SchemeExpr eval(const SchemeExpr& e)
 {
     SchemeEnvironment env = standardEnvironment();
     return boost::apply_visitor(evalVisitor(env), e);
 }
 
-SchemeExpr scmAbs(SchemeArgs args)
+SchemeExpr scmAbs(const SchemeArgs& args)
 {
     return std::abs(intValue(args.front()));
 }
 
-SchemeExpr scmAdd(SchemeArgs args)
+SchemeExpr scmAdd(const SchemeArgs& args)
 {
     std::vector<int> ints;
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
     return std::accumulate(ints.begin(), ints.end(), 0);
 }
 
-SchemeExpr scmSub(SchemeArgs args)
+SchemeExpr scmSub(const SchemeArgs& args)
 {
     if (args.empty()) {
         throw scheme_error("- requires at least one argument, passed 0");
@@ -41,7 +41,7 @@ SchemeExpr scmSub(SchemeArgs args)
     }
 }
 
-SchemeExpr scmMul(SchemeArgs args)
+SchemeExpr scmMul(const SchemeArgs& args)
 {
     auto mul = [](int x, int y) { return x * y; };
     std::vector<int> ints;
@@ -49,7 +49,7 @@ SchemeExpr scmMul(SchemeArgs args)
     return std::accumulate(ints.begin(), ints.end(), 1, mul);
 }
 
-SchemeExpr scmLessThan(SchemeArgs args)
+SchemeExpr scmLessThan(const SchemeArgs& args)
 {
     if (args.size() < 2) {
         std::ostringstream error;
