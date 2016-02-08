@@ -54,6 +54,8 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const SchemeExpr& e)
 {
+    // This and the list case in stringVisitor don't use stringValue()
+    // to avoid a circular dependency with parser.hh
     std::ostringstream ss;
     boost::apply_visitor(stringVisitor(ss), e);
     return os << ss.str();
