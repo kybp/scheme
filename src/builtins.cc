@@ -1,4 +1,4 @@
-#include <algorithm> // for std::transform
+#include <algorithm> // for std::transform, std::is_sorted
 #include <cstdlib>   // for std::abs
 #include <iterator>  // for std::back_inserter
 #include <numeric>   // for std::accumulate
@@ -49,6 +49,20 @@ SchemeExpr scmMul(SchemeArgs args)
     return std::accumulate(ints.begin(), ints.end(), 1, mul);
 }
 
+SchemeExpr scmLessThan(SchemeArgs args)
+{
+    if (args.size() < 2) {
+        std::ostringstream error;
+        error << "< requires at least two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        std::vector<int> ints;
+        std::transform(args.begin(), args.end(), back_inserter(ints),
+                       intValue);
+        return std::is_sorted(ints.begin(), ints.end());
+    }
+}
+
 SchemeEnvironment standardEnvironment()
 {
     SchemeEnvironment env;
@@ -56,6 +70,7 @@ SchemeEnvironment standardEnvironment()
     env["+"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAdd));
     env["-"] = SchemeExpr(std::make_shared<SchemeFunction>(scmSub));
     env["*"] = SchemeExpr(std::make_shared<SchemeFunction>(scmMul));
+    env["<"] = SchemeExpr(std::make_shared<SchemeFunction>(scmLessThan));
     env["abs"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAbs));
 
     return env;

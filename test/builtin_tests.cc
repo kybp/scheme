@@ -41,6 +41,25 @@ TEST(MultiplicationTest, BasicMultiplication) {
     ASSERT_EQ(6, intValue(eval(parse("(* 1 2 3)"))));
 }
 
+// <
+
+TEST(LessThanTest, LessThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(<)")), scheme_error);
+    ASSERT_THROW(eval(parse("(< 1)")), scheme_error);
+}
+
+TEST(LessThanTest, LessThanIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(< 1 2)"))));
+}
+
+TEST(LessThanTest, GreaterThanIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(< 2 1)"))));
+}
+
+TEST(LessThanTest, NonIntegerThrows) {
+    ASSERT_THROW(eval(parse("(< (quote a) (quote b))")), scheme_error);
+}
+
 // abs
 
 TEST(AbsTests, AbsPositiveInput) {

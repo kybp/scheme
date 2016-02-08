@@ -23,6 +23,7 @@ class scheme_error : public std::exception {
     const std::string what_;
 public:
     scheme_error(const std::string& what) : what_(what) {}
+    scheme_error(const std::ostringstream& s) : what_(s.str()) {}
     virtual const char *what() const noexcept override
         { return what_.c_str(); }
 };
