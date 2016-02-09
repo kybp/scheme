@@ -43,8 +43,21 @@ public:
     }
 };
 
+inline SchemeArgs tail(const SchemeList& list) {
+    SchemeArgs result;
+    std::copy(list.begin() + 1, list.end(), back_inserter(result));
+    return result;
+}
+
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
-    std::shared_ptr<SchemeEnvironment> env;
+    using envPointer = std::shared_ptr<SchemeEnvironment>;
+    envPointer env;
+    SchemeExpr evalDefine(const SchemeArgs& args, envPointer env) const;
+    SchemeExpr evalFuncall(const SchemeExpr& car, const SchemeArgs& args,
+                           envPointer env) const;
+    SchemeExpr evalIf(const SchemeArgs& args, envPointer env) const;
+    SchemeExpr evalLambda(const SchemeArgs& args, envPointer env) const;
+    SchemeExpr evalSymbol(const std::string& symbol, envPointer env) const;
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
 
@@ -57,15 +70,7 @@ public:
     }
 
     SchemeExpr operator()(const std::string& symbol) const {
-        SchemeEnvironment *definingEnv = env->find(symbol);
-
-        if (definingEnv == nullptr) {
-            std::ostringstream error;
-            error << "Undefined symbol: " << symbol;
-            throw scheme_error(error);
-        } else {
-            return (*definingEnv)[symbol];
-        }
+        return evalSymbol(symbol, env);
     }
 
     SchemeExpr operator()(const std::shared_ptr<SchemeFunction>& fn) const {
@@ -76,48 +81,31 @@ public:
         std::ostringstream carStream;
         carStream << list[0];
         std::string car = carStream.str();
-        if (car == "quote") {
-            return list[1];
-        }
-        else if (car == "if") {
-            if (list.size() != 4) {
-                std::ostringstream error;
-                error << "if requires exactly 3 arguments, ";
-                error << "passed " << list.size();
-                throw scheme_error(error);
-            }
-            auto pred = eval(list[1], env);
-            if (boolValue(pred)) {
-                return eval(list[2], env);
-            } else {
-                return eval(list[3], env);
-            }
-        } else if (car == "define") {
-            auto var = stringValue(list[1]);
-            // The problem might be right here? Or maybe in
-            // LexicalFunction's constructor. Anyway, I think the
-            // issue is that at some point an environment we meant to
-            // pass by reference is getting copied
-            (*env)[var] = eval(list[2], env);
-            return list[1];
-        } else if (car == "lambda") {
-            std::vector<std::string> params;
-            auto args = listValue(list[1]);
-            std::transform(args.begin(), args.end(), back_inserter(params),
-                           stringValue);
-            return std::make_shared<LexicalFunction>(
-                LexicalFunction(params, list[2], env));
-        } else {                // function call
-            auto car = eval(list[0], env);
-            auto evalVisitorArg = [this](SchemeExpr e)
-                { return eval(e, env); };
-            SchemeArgs args;
-            std::transform(list.begin() + 1, list.end(),
-                           back_inserter(args), evalVisitorArg );
-            return (*functionPointer(car))(args);
+        SchemeArgs args = tail(list);
+             if (car == "quote")  return args.front();
+        else if (car == "if")     return evalIf(args, env);
+        else if (car == "define") return evalDefine(args, env);
+        else if (car == "lambda") return evalLambda(tail(list), env);
+        else {
+            SchemeExpr car = eval(list.front(), env);
+            return evalFuncall(car, args, env);
         }
     }
 };
+
+inline SchemeExpr
+evalVisitor::evalDefine(const SchemeArgs& args, envPointer env) const
+{
+    if (args.size() == 2) {
+        auto var = stringValue(args[0]);
+        (*env)[var] = eval(args[1], env);
+        return args.front();
+    } else {
+        std::ostringstream error;
+        error << "define requires two arguments, given " << args.size();
+        throw scheme_error(error);
+    }
+}
 
 inline SchemeExpr eval(SchemeExpr e, std::shared_ptr<SchemeEnvironment> env)
 {

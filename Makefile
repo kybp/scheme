@@ -2,8 +2,11 @@ CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
 
-scheme: $(SRC_DIR)/repl.cc parser.o builtins.o
+scheme: $(SRC_DIR)/repl.cc parser.o builtins.o eval.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
+
+eval.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/eval.hh
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/eval.cc
 
 parser.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/parser.cc
@@ -65,7 +68,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
-eval_tests: parser.o builtins.o eval_tests.o gtest_main.a
+eval_tests: parser.o builtins.o eval.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += printer_tests
@@ -81,6 +84,7 @@ builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
+# eval.o might be needed here
 builtin_tests: parser.o builtins.o builtin_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
