@@ -5,7 +5,7 @@ TEST_DIR = test
 scheme: $(SRC_DIR)/repl.cc parser.o builtins.o eval.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
-eval.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/eval.hh
+eval.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/eval.hh $(SRC_DIR)/eval.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/eval.cc
 
 parser.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
@@ -63,8 +63,8 @@ parser_tests: parser.o parser_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += eval_tests
-eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
-	      $(SRC_DIR)/scheme_types.hh\
+eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/scheme_types.hh\
+	      $(SRC_DIR)/eval.hh $(SRC_DIR)/eval.cc\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 

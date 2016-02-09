@@ -43,8 +43,16 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
 
 SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
 {
-    auto toBool [env](SchemeExpr& e) { return boolValue(eval(e, env)); };
-    return std::any_of(args.begin(), args.end(), toBool);
+    for (const SchemeExpr& e : args) {
+        auto evalled = eval(e, env);
+        try {
+            if (boolValue(evalled)) return true;
+            // else ignore #f
+        } catch (const scheme_error&) {
+            return evalled;
+        }
+    }
+    return false;
 }
 
 SchemeExpr

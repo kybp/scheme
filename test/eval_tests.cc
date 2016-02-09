@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "builtins.hh"
+#include "builtins.hh"          // for standard environment evaluation
 #include "eval.hh"
 #include "scheme_types.hh"
 
@@ -65,4 +65,8 @@ TEST(OrTest, AllArgsFalseIsFalse) {
 TEST(OrTest, AnyTrueArgsIsTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(or #f #t #f)"))));
     ASSERT_TRUE(boolValue(eval(parse("(or #t #t)"))));
+}
+
+TEST(OrTest, ReturnsFirstNonFalseArg) {
+    ASSERT_EQ(1, intValue(eval(parse("(or #f 1 #t)"))));
 }
