@@ -66,7 +66,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
-eval_tests: parser.o builtins.o eval_tests.o gtest_main.a
+eval_tests: parser.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) $^ -o $@
 
 TESTS += printer_tests

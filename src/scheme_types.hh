@@ -28,14 +28,36 @@ public:
         { return what_.c_str(); }
 };
 
-typedef std::map<std::string, SchemeExpr> SchemeEnvironment;
+class SchemeEnvironment {
+    std::map<std::string, SchemeExpr> definitions;
+    std::shared_ptr<SchemeEnvironment> outer;
+public:
+    SchemeEnvironment() = default;
 
-struct SchemeFunction {
-    std::function<SchemeExpr(std::vector<SchemeExpr>)> fn;
-    SchemeEnvironment env;
-    SchemeFunction(std::function<SchemeExpr(std::vector<SchemeExpr>)> fn)
-        : fn(fn), env()
-        {}
+    SchemeEnvironment(const std::vector<std::string>& params,
+                      const std::vector<SchemeExpr>& args,
+                      std::shared_ptr<SchemeEnvironment> outer)
+        : outer(outer)
+    {
+        for (std::size_t i = 0; i < args.size(); ++i) {
+            definitions[params[i]] = args[i];
+        }
+    }
+
+    // Return the innermost SchemeEnvironment which defines var
+    SchemeEnvironment *find(const std::string& var) {
+        if (definitions.find(var) != definitions.end()) {
+            return this;
+        } else if (outer != nullptr) {
+            return outer->find(var);
+        } else {
+            return nullptr;
+        }
+    }
+
+    SchemeExpr& operator[](const std::string& symbol) {
+        return definitions[symbol];
+    }
 };
 
 #endif

@@ -10,6 +10,40 @@
 
 typedef std::vector<SchemeExpr> SchemeArgs;
 
+SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env);
+
+struct SchemeFunction {
+    virtual SchemeExpr operator()(const SchemeArgs& args) = 0;
+};
+
+class PrimitiveFunction : public SchemeFunction {
+    std::function<SchemeExpr(SchemeArgs)> fn;
+public:
+    PrimitiveFunction(std::function<SchemeExpr(const SchemeArgs&)> fn)//,
+        : fn(fn)
+        {}
+    virtual SchemeExpr operator()(const SchemeArgs& args) override {
+        return fn(args);
+    }
+};
+
+class LexicalFunction : public SchemeFunction {
+    std::vector<std::string> params;
+    SchemeExpr body;
+    std::shared_ptr<SchemeEnvironment> env;
+public:
+    LexicalFunction(std::vector<std::string> params, SchemeExpr body,
+                    SchemeEnvironment env)
+        : params(params), body(body),
+          env(std::make_shared<SchemeEnvironment>(env))
+    {}
+
+    virtual SchemeExpr operator()(const SchemeArgs& args) override {
+        auto execEnv = SchemeEnvironment(params, args, env);
+        return eval(body, execEnv);
+    }
+};
+
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
     SchemeEnvironment& env;
 public:
@@ -24,12 +58,14 @@ public:
     }
 
     SchemeExpr operator()(const std::string& symbol) const {
-        if (env.find(symbol) == env.end()) {
+        SchemeEnvironment *definingEnv = env.find(symbol);
+
+        if (definingEnv == nullptr) {
             std::ostringstream error;
             error << "Undefined symbol: " << symbol;
             throw scheme_error(error);
         } else {
-            return env[symbol];
+            return (*definingEnv)[symbol];
         }
     }
 
@@ -59,15 +95,22 @@ public:
             auto var = stringValue(list[1]);
             env[var] = boost::apply_visitor(evalVisitor(env), list[2]);
             return list[1];
-        } else {
-            auto car = boost::apply_visitor(evalVisitor(env), list[0]);
+        } else if (car == "lambda") {
+            std::vector<std::string> params;
+            auto args = listValue(list[1]);
+            std::transform(args.begin(), args.end(), back_inserter(params),
+                           stringValue);
+            return std::make_shared<LexicalFunction>(
+                LexicalFunction(params, list[2], env));
+        } else {                // function call
+            auto car = eval(list[0], env);
             auto proc = functionPointer(car);
             auto evalVisitorArg = [this](SchemeExpr e)
-                { return boost::apply_visitor(evalVisitor(env), e); };
+                { return eval(e, env); };
             SchemeArgs args;
             std::transform(list.begin() + 1, list.end(),
                            back_inserter(args), evalVisitorArg );
-            return proc->fn(args);
+            return (*proc)(args);
         }
     }
 };

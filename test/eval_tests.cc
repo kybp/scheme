@@ -34,3 +34,9 @@ TEST(IfTest, NonBoolPredicateThrows) {
     SchemeEnvironment env;
     ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
 }
+
+TEST(LambdaTest, DefineConstantFunction) {
+    SchemeEnvironment env;
+    eval(parse("(define three (lambda () 3))"), env);
+    ASSERT_EQ(3, intValue(eval(parse("(three)"), env)));
+}

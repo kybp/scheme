@@ -67,11 +67,11 @@ SchemeEnvironment standardEnvironment()
 {
     SchemeEnvironment env;
 
-    env["+"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAdd));
-    env["-"] = SchemeExpr(std::make_shared<SchemeFunction>(scmSub));
-    env["*"] = SchemeExpr(std::make_shared<SchemeFunction>(scmMul));
-    env["<"] = SchemeExpr(std::make_shared<SchemeFunction>(scmLessThan));
-    env["abs"] = SchemeExpr(std::make_shared<SchemeFunction>(scmAbs));
+    env["+"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmAdd));
+    env["-"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmSub));
+    env["*"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmMul));
+    env["<"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmLessThan));
+    env["abs"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmAbs));
 
     return env;
 }
