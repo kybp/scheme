@@ -70,3 +70,15 @@ TEST(OrTest, AnyTrueArgsIsTrue) {
 TEST(OrTest, ReturnsFirstNonFalseArg) {
     ASSERT_EQ(1, intValue(eval(parse("(or #f 1 #t)"))));
 }
+
+TEST(AndTest, NoArgsIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(and)"))));
+}
+
+TEST(AndTest, AnyFalseArgIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(and #t #t #f #t)"))));
+}
+
+TEST(AndTest, AllTrueArgsReturnsLast) {
+    ASSERT_EQ(3, intValue(eval(parse("(and 1 2 3)"))));
+}

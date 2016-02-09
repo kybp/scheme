@@ -52,6 +52,7 @@ inline SchemeArgs tail(const SchemeList& list) {
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
     using envPointer = std::shared_ptr<SchemeEnvironment>;
     envPointer env;
+    SchemeExpr evalAnd(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalDefine(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalFuncall(const SchemeExpr& car, const SchemeArgs& args,
                            envPointer env) const;
@@ -84,6 +85,7 @@ public:
         std::string carStr = carStream.str();
         SchemeArgs args = tail(list);
              if (carStr == "quote")  return args.front();
+        else if (carStr == "and")    return evalAnd(args, env);
         else if (carStr == "if")     return evalIf(args, env);
         else if (carStr == "define") return evalDefine(args, env);
         else if (carStr == "lambda") return evalLambda(args, env);

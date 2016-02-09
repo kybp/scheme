@@ -4,6 +4,23 @@
 #include "parser.hh"
 #include "scheme_types.hh"
 
+SchemeExpr evalVisitor::evalAnd(const SchemeArgs& args, envPointer env) const
+{
+    SchemeExpr last = parse("#t");
+
+    for (const SchemeExpr& e : args) {
+        auto evalled = eval(e, env);
+        try {
+            if (!boolValue(evalled)) return false;
+            else last = evalled;
+        } catch (const scheme_error&) {
+            last = evalled;
+        }
+    }
+
+    return last;
+}
+
 SchemeExpr
 evalVisitor::evalFuncall(const SchemeExpr& car, const SchemeArgs& args,
                          envPointer env) const
