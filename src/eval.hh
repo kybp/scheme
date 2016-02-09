@@ -74,7 +74,9 @@ public:
     }
 
     SchemeExpr operator()(const SchemeList& list) const {
-        const auto& car = stringValue(list[0]);
+        std::ostringstream carStream;
+        carStream << list[0];
+        std::string car = carStream.str();
         if (car == "quote") {
             return list[1];
         }
@@ -104,13 +106,12 @@ public:
                 LexicalFunction(params, list[2], env));
         } else {                // function call
             auto car = eval(list[0], env);
-            auto proc = functionPointer(car);
             auto evalVisitorArg = [this](SchemeExpr e)
                 { return eval(e, env); };
             SchemeArgs args;
             std::transform(list.begin() + 1, list.end(),
                            back_inserter(args), evalVisitorArg );
-            return (*proc)(args);
+            return (*functionPointer(car))(args);
         }
     }
 };

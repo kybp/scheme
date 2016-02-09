@@ -40,6 +40,11 @@ TEST(IfTest, EvaluatesConsequentOnTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(if #t (if #t #t #f) #f)"), env)));
 }
 
+TEST(LambdaTest, CallFunctionLiteral) {
+    SchemeEnvironment env;
+    ASSERT_TRUE(boolValue(eval(parse("((lambda () #t))"), env)));
+}
+
 TEST(LambdaTest, DefineConstantFunction) {
     SchemeEnvironment env;
     eval(parse("(define three (lambda () 3))"), env);

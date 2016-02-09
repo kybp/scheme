@@ -52,6 +52,10 @@ TEST(LessThanTest, LessThanIsTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(< 1 2)"))));
 }
 
+TEST(LessThanIsTrue, EqualIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(< 2 2)"))));
+}
+
 TEST(LessThanTest, GreaterThanIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(< 2 1)"))));
 }

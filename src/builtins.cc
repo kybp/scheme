@@ -59,7 +59,8 @@ SchemeExpr scmLessThan(const SchemeArgs& args)
         std::vector<int> ints;
         std::transform(args.begin(), args.end(), back_inserter(ints),
                        intValue);
-        return std::is_sorted(ints.begin(), ints.end());
+        return std::adjacent_find(ints.begin(), ints.end(),
+                                  std::greater_equal<int>()) == ints.end();
     }
 }
 
