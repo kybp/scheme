@@ -111,3 +111,26 @@ TEST(AbsTests, AbsPositiveInput) {
 TEST(AbsTests, AbsNegativeInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
 }
+
+// not
+
+TEST(NotTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(not)")), scheme_error);
+}
+
+TEST(NotTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(not #t #t)")), scheme_error);
+}
+
+TEST(NotTests, NonBoolArgThrows) {
+    ASSERT_THROW(eval(parse("(not 1)")), scheme_error);
+    ASSERT_THROW(eval(parse("(not (quote um))")), scheme_error);
+}
+
+TEST(NotTests, NotTrueIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(not #t)"))));
+}
+
+TEST(NotTests, NotFalseIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(not #f)"))));
+}

@@ -93,6 +93,21 @@ SchemeExpr scmGreater(const SchemeArgs& args)
     }
 }
 
+SchemeExpr scmNot(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "not requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        if (boolValue(args.front())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
+
 SchemeExpr primitiveFunction(SchemeExpr (*fn)(const SchemeArgs&))
 {
     return SchemeExpr(std::make_shared<PrimitiveFunction>(fn));
@@ -111,6 +126,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     names.push_back(">"); functions.push_back(primitiveFunction(scmGreater));
     names.push_back("="); functions.push_back(primitiveFunction(scmEqual));
     names.push_back("abs"); functions.push_back(primitiveFunction(scmAbs));
+    names.push_back("not"); functions.push_back(primitiveFunction(scmNot));
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));
