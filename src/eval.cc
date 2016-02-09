@@ -41,6 +41,12 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
         LexicalFunction(params, args[1], env));
 }
 
+SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
+{
+    auto toBool [env](SchemeExpr& e) { return boolValue(eval(e, env)); };
+    return std::any_of(args.begin(), args.end(), toBool);
+}
+
 SchemeExpr
 evalVisitor::evalSymbol(const std::string& symbol, envPointer env) const
 {

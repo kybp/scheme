@@ -57,6 +57,7 @@ class evalVisitor : public boost::static_visitor<SchemeExpr> {
                            envPointer env) const;
     SchemeExpr evalIf(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalLambda(const SchemeArgs& args, envPointer env) const;
+    SchemeExpr evalOr(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalSymbol(const std::string& symbol, envPointer env) const;
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
@@ -85,7 +86,8 @@ public:
              if (carStr == "quote")  return args.front();
         else if (carStr == "if")     return evalIf(args, env);
         else if (carStr == "define") return evalDefine(args, env);
-        else if (carStr == "lambda") return evalLambda(tail(list), env);
+        else if (carStr == "lambda") return evalLambda(args, env);
+        else if (carStr == "or")     return evalOr(args, env);
         else {
             SchemeExpr car = eval(list.front(), env);
             return evalFuncall(car, args, env);

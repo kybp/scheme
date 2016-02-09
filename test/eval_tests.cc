@@ -53,3 +53,16 @@ TEST(LambdaTest, DefineConstantFunction) {
     eval(parse("(define three (lambda () 3))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(three)"), env)));
 }
+
+TEST(OrTest, NoArgsIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(or)"))));
+}
+
+TEST(OrTest, AllArgsFalseIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(or #f #f #f)"))));
+}
+
+TEST(OrTest, AnyTrueArgsIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(or #f #t #f)"))));
+    ASSERT_TRUE(boolValue(eval(parse("(or #t #t)"))));
+}
