@@ -1,4 +1,4 @@
-#include <algorithm> // for std::transform, std::is_sorted
+#include <algorithm>
 #include <cstdlib>   // for std::abs
 #include <iterator>  // for std::back_inserter
 #include <numeric>   // for std::accumulate
@@ -108,9 +108,25 @@ SchemeExpr scmNot(const SchemeArgs& args)
     }
 }
 
-SchemeExpr primitiveFunction(SchemeExpr (*fn)(const SchemeArgs&))
+SchemeExpr scmEq(const SchemeArgs& args)
 {
-    return SchemeExpr(std::make_shared<PrimitiveFunction>(fn));
+    if (args.size() != 2) {
+        std::ostringstream error;
+        error << "eq? requires two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return stringValue(args[0]) == stringValue(args[1]);
+    }
+}
+
+inline void addPrimitive(std::vector<std::string>& names,
+                         std::vector<SchemeExpr>& functions,
+                         const std::string& name,
+                         SchemeExpr (*function)(const SchemeArgs&))
+{
+    auto primitive = SchemeExpr(std::make_shared<PrimitiveFunction>(function));
+    names.push_back(name);
+    functions.push_back(primitive);
 }
 
 std::shared_ptr<SchemeEnvironment> standardEnvironment()
@@ -118,14 +134,15 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     std::vector<std::string> names;
     std::vector<SchemeExpr> functions;
 
-    names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
-    names.push_back("-"); functions.push_back(primitiveFunction(scmSub));
-    names.push_back("*"); functions.push_back(primitiveFunction(scmMul));
-    names.push_back("<"); functions.push_back(primitiveFunction(scmLesser));
-    names.push_back(">"); functions.push_back(primitiveFunction(scmGreater));
-    names.push_back("="); functions.push_back(primitiveFunction(scmEqual));
-    names.push_back("abs"); functions.push_back(primitiveFunction(scmAbs));
-    names.push_back("not"); functions.push_back(primitiveFunction(scmNot));
+    addPrimitive(names, functions, "+", scmAdd);
+    addPrimitive(names, functions, "-", scmSub);
+    addPrimitive(names, functions, "*", scmMul);
+    addPrimitive(names, functions, "<", scmLesser);
+    addPrimitive(names, functions, ">", scmGreater);
+    addPrimitive(names, functions, "=", scmEqual);
+    addPrimitive(names, functions, "abs", scmAbs);
+    addPrimitive(names, functions, "eq?", scmEq);
+    addPrimitive(names, functions, "not", scmNot);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));

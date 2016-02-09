@@ -116,6 +116,30 @@ TEST(AbsTests, AbsNegativeInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
 }
 
+// eq?
+
+TEST(EqTests, LessThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(eq?)")), scheme_error);
+    ASSERT_THROW(eval(parse("(eq? (quote foo))")), scheme_error);
+}
+
+TEST(EqTests, MoreThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(eq? (quote foo) (quote bar) (quote baz))")),
+                 scheme_error);
+}
+
+TEST(EqTests, NonSymbolArgThrows) {
+    ASSERT_THROW(eval(parse("(eq? 2 2)")), scheme_error);
+}
+
+TEST(EqTests, EqualSymbolsIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(eq? (quote foo) (quote foo))"))));
+}
+
+TEST(EqTests, UnequalSymbolsIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(eq? (quote foo) (quote bar))"))));
+}
+
 // not
 
 TEST(NotTests, NoArgsThrows) {
