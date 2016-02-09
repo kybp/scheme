@@ -1,4 +1,3 @@
-CXX = clang++
 CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
@@ -58,7 +57,7 @@ parser_tests.o: $(TEST_DIR)/parser_tests.cc\
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/parser_tests.cc
 
 parser_tests: parser.o parser_tests.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $^ -o $@
+	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += eval_tests
 eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
@@ -67,7 +66,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/eval.hh\
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
 eval_tests: parser.o builtins.o eval_tests.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $^ -o $@
+	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += printer_tests
 printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme_types.hh\
@@ -75,7 +74,7 @@ printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme_types.hh\
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
 printer_tests: parser.o printer_tests.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $^ -o $@
+	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += builtin_tests
 builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
@@ -83,7 +82,7 @@ builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
 builtin_tests: parser.o builtins.o builtin_tests.o gtest_main.a
-	$(CXX) $(CPPFLAGS) $^ -o $@
+	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 tests: $(TESTS)
 
