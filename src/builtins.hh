@@ -3,7 +3,7 @@
 
 #include "scheme_types.hh"
 
-SchemeEnvironment standardEnvironment();
+std::shared_ptr<SchemeEnvironment> standardEnvironment();
 SchemeExpr eval(const SchemeExpr& e); // evaluate in standard environment
 
 #endif

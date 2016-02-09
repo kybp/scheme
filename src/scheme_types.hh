@@ -35,6 +35,11 @@ public:
     SchemeEnvironment() = default;
 
     SchemeEnvironment(const std::vector<std::string>& params,
+                      const std::vector<SchemeExpr>& args)
+        : SchemeEnvironment(params, args, nullptr)
+    {}
+
+    SchemeEnvironment(const std::vector<std::string>& params,
                       const std::vector<SchemeExpr>& args,
                       std::shared_ptr<SchemeEnvironment> outer)
         : outer(outer)
@@ -44,7 +49,6 @@ public:
         }
     }
 
-    // Return the innermost SchemeEnvironment which defines var
     SchemeEnvironment *find(const std::string& var) {
         if (definitions.find(var) != definitions.end()) {
             return this;

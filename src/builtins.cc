@@ -9,8 +9,7 @@
 
 SchemeExpr eval(const SchemeExpr& e)
 {
-    SchemeEnvironment env = standardEnvironment();
-    return boost::apply_visitor(evalVisitor(env), e);
+    return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
 }
 
 SchemeExpr scmAbs(const SchemeArgs& args)
@@ -84,17 +83,19 @@ SchemeExpr primitiveFunction(SchemeExpr (*fn)(const SchemeArgs&))
     return SchemeExpr(std::make_shared<PrimitiveFunction>(fn));
 }
 
-SchemeEnvironment standardEnvironment()
+std::shared_ptr<SchemeEnvironment> standardEnvironment()
 {
-    SchemeEnvironment env;
+    std::vector<std::string> names;
+    std::vector<SchemeExpr> functions;
 
-    env["+"] = primitiveFunction(scmAdd);
-    env["-"] = primitiveFunction(scmSub);
-    env["*"] = primitiveFunction(scmMul);
-    env["<"] = primitiveFunction(scmLessThan);
-    env["="] = primitiveFunction(scmEqual);
-    env["abs"] = primitiveFunction(scmAbs);
+    names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
+    names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
+    names.push_back("-"); functions.push_back(primitiveFunction(scmSub));
+    names.push_back("*"); functions.push_back(primitiveFunction(scmMul));
+    names.push_back("<"); functions.push_back(primitiveFunction(scmLessThan));
+    names.push_back("="); functions.push_back(primitiveFunction(scmEqual));
+    names.push_back("abs"); functions.push_back(primitiveFunction(scmAbs));
 
-    return env;
+    return std::make_shared<SchemeEnvironment>(
+        SchemeEnvironment(names, functions));
 }
-

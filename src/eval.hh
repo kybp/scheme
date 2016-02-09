@@ -9,8 +9,7 @@
 #include "scheme_types.hh"
 
 typedef std::vector<SchemeExpr> SchemeArgs;
-
-SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env);
+SchemeExpr eval(SchemeExpr e, std::shared_ptr<SchemeEnvironment> env);
 
 struct SchemeFunction {
     virtual SchemeExpr operator()(const SchemeArgs& args) = 0;
@@ -33,21 +32,21 @@ class LexicalFunction : public SchemeFunction {
     std::shared_ptr<SchemeEnvironment> env;
 public:
     LexicalFunction(std::vector<std::string> params, SchemeExpr body,
-                    SchemeEnvironment env)
-        : params(params), body(body),
-          env(std::make_shared<SchemeEnvironment>(env))
+                    std::shared_ptr<SchemeEnvironment> env)
+        : params(params), body(body), env(env)
     {}
 
     virtual SchemeExpr operator()(const SchemeArgs& args) override {
-        auto execEnv = SchemeEnvironment(params, args, env);
+        auto execEnv = std::make_shared<SchemeEnvironment>(
+            SchemeEnvironment(params, args, env));
         return eval(body, execEnv);
     }
 };
 
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
-    SchemeEnvironment& env;
+    std::shared_ptr<SchemeEnvironment> env;
 public:
-    evalVisitor(SchemeEnvironment& env) : env(env) {}
+    evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
 
     SchemeExpr operator()(int i) const {
         return i;
@@ -58,7 +57,7 @@ public:
     }
 
     SchemeExpr operator()(const std::string& symbol) const {
-        SchemeEnvironment *definingEnv = env.find(symbol);
+        SchemeEnvironment *definingEnv = env->find(symbol);
 
         if (definingEnv == nullptr) {
             std::ostringstream error;
@@ -87,7 +86,7 @@ public:
                 error << "passed " << list.size();
                 throw scheme_error(error);
             }
-            auto pred = boost::apply_visitor(evalVisitor(env), list[1]);
+            auto pred = eval(list[1], env);
             if (boolValue(pred)) {
                 return eval(list[2], env);
             } else {
@@ -95,7 +94,11 @@ public:
             }
         } else if (car == "define") {
             auto var = stringValue(list[1]);
-            env[var] = boost::apply_visitor(evalVisitor(env), list[2]);
+            // The problem might be right here? Or maybe in
+            // LexicalFunction's constructor. Anyway, I think the
+            // issue is that at some point an environment we meant to
+            // pass by reference is getting copied
+            (*env)[var] = eval(list[2], env);
             return list[1];
         } else if (car == "lambda") {
             std::vector<std::string> params;
@@ -116,7 +119,7 @@ public:
     }
 };
 
-inline SchemeExpr eval(SchemeExpr e, SchemeEnvironment& env)
+inline SchemeExpr eval(SchemeExpr e, std::shared_ptr<SchemeEnvironment> env)
 {
     return boost::apply_visitor(evalVisitor(env), e);
 }

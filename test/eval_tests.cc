@@ -1,52 +1,46 @@
 #include "gtest/gtest.h"
+#include "builtins.hh"
 #include "eval.hh"
 #include "scheme_types.hh"
 
 TEST(EvalTest, EvalSelfEvaluating) {
-    SchemeEnvironment env;
-    ASSERT_EQ(3, intValue(eval(parse("3"), env)));
+    ASSERT_EQ(3, intValue(eval(parse("3"))));
 }
 
 TEST(EvalTest, EvalQuotedSymbol) {
-    SchemeEnvironment env;
-    ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"), env)));
+    ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"))));
 }
 
 TEST(EvalTest, DefineVariable) {
-    SchemeEnvironment env;
+    auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define x 2)"), env);
     ASSERT_EQ(2, intValue(eval(parse("x"), env)));
 }
 
 TEST(IfTest, LessThanTwoArgsThrows) {
-    SchemeEnvironment env;
-    ASSERT_THROW(eval(parse("(if)"),      env), scheme_error);
-    ASSERT_THROW(eval(parse("(if #t)"),   env), scheme_error);
-    ASSERT_THROW(eval(parse("(if #t 1)"), env), scheme_error);
+    ASSERT_THROW(eval(parse("(if)")),      scheme_error);
+    ASSERT_THROW(eval(parse("(if #t)")),   scheme_error);
+    ASSERT_THROW(eval(parse("(if #t 1)")), scheme_error);
 }
 
 TEST(IfTest, MoreThanTwoArgsThrows) {
-    SchemeEnvironment env;
-    ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
+    ASSERT_THROW(eval(parse("(if 1 2 3)")), scheme_error);
 }
 
 TEST(IfTest, NonBoolPredicateThrows) {
-    SchemeEnvironment env;
-    ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
+    ASSERT_THROW(eval(parse("(if 1 2 3)")), scheme_error);
 }
 
 TEST(IfTest, EvaluatesConsequentOnTrue) {
-    SchemeEnvironment env;
-    ASSERT_TRUE(boolValue(eval(parse("(if #t (if #t #t #f) #f)"), env)));
+    ASSERT_TRUE(boolValue(eval(parse("(if #t (if #t #t #f) #f)"))));
 }
 
 TEST(LambdaTest, CallFunctionLiteral) {
-    SchemeEnvironment env;
-    ASSERT_TRUE(boolValue(eval(parse("((lambda () #t))"), env)));
+    ASSERT_TRUE(boolValue(eval(parse("((lambda () #t))"))));
 }
 
 TEST(LambdaTest, DefineConstantFunction) {
-    SchemeEnvironment env;
+    auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define three (lambda () 3))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(three)"), env)));
 }
