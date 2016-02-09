@@ -35,6 +35,11 @@ TEST(IfTest, NonBoolPredicateThrows) {
     ASSERT_THROW(eval(parse("(if 1 2 3)"), env), scheme_error);
 }
 
+TEST(IfTest, EvaluatesConsequentOnTrue) {
+    SchemeEnvironment env;
+    ASSERT_TRUE(boolValue(eval(parse("(if #t (if #t #t #f) #f)"), env)));
+}
+
 TEST(LambdaTest, DefineConstantFunction) {
     SchemeEnvironment env;
     eval(parse("(define three (lambda () 3))"), env);

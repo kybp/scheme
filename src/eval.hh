@@ -87,9 +87,9 @@ public:
             }
             auto pred = boost::apply_visitor(evalVisitor(env), list[1]);
             if (boolValue(pred)) {
-                return list[2];
+                return eval(list[2], env);
             } else {
-                return list[3];
+                return eval(list[3], env);
             }
         } else if (car == "define") {
             auto var = stringValue(list[1]);
