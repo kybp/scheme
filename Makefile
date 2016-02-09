@@ -84,8 +84,7 @@ builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
-# eval.o might be needed here
-builtin_tests: parser.o builtins.o builtin_tests.o gtest_main.a
+builtin_tests: eval.o parser.o builtins.o builtin_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 tests: $(TESTS)

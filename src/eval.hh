@@ -80,12 +80,12 @@ public:
     SchemeExpr operator()(const SchemeList& list) const {
         std::ostringstream carStream;
         carStream << list[0];
-        std::string car = carStream.str();
+        std::string carStr = carStream.str();
         SchemeArgs args = tail(list);
-             if (car == "quote")  return args.front();
-        else if (car == "if")     return evalIf(args, env);
-        else if (car == "define") return evalDefine(args, env);
-        else if (car == "lambda") return evalLambda(tail(list), env);
+             if (carStr == "quote")  return args.front();
+        else if (carStr == "if")     return evalIf(args, env);
+        else if (carStr == "define") return evalDefine(args, env);
+        else if (carStr == "lambda") return evalLambda(tail(list), env);
         else {
             SchemeExpr car = eval(list.front(), env);
             return evalFuncall(car, args, env);
