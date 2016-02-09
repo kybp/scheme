@@ -7,7 +7,8 @@
 #include "scheme_types.hh"
 
 std::deque<std::string> tokenize(const std::string string);
-SchemeExpr parse(const std::string& program);
+SchemeExpr parse(const std::string& expression);
+std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out);
 
 inline int intValue(const SchemeExpr& e)
 {

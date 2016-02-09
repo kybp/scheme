@@ -57,7 +57,7 @@ public:
         } else {
             std::ostringstream error;
             error << "Undefined symbol: " << var;
-            throw scheme_error(var);
+            throw scheme_error(error);
         }
     }
 

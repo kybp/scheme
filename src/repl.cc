@@ -7,14 +7,16 @@
 
 int main()
 {
-    std::string line;
     auto env = standardEnvironment();
+    std::cin >> std::noskipws;
 
     do {
         try {
             std::cout << " * " << std::flush;
-            getline(std::cin, line);
-            if (std::cin) std::cout << eval(parse(line), env) << std::endl;
+            SchemeExpr expr;
+            if (readSchemeExpr(std::cin, expr)) {
+                std::cout << eval(expr, env) << std::endl;
+            }
         } catch (const scheme_error& e) {
             std::cerr << "error: " << e.what() << std::endl;
         }

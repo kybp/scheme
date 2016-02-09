@@ -6,7 +6,7 @@
 
 SchemeExpr evalVisitor::evalAnd(const SchemeArgs& args, envPointer env) const
 {
-    SchemeExpr last = parse("#t");
+    SchemeExpr last = true;
 
     for (const SchemeExpr& e : args) {
         auto evalled = eval(e, env);

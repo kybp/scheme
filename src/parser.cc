@@ -8,29 +8,28 @@
 #include "parser.hh"
 #include "scheme_types.hh"
 
-std::deque<std::string> tokenize(const std::string string)
+std::istream& readToken(std::istream& in, std::string& out)
 {
-    std::deque<std::string> tokens;
-    std::ostringstream currentToken;
+    std::ostringstream token;
+    char c;
 
-    for (const auto& c : string) {
+    while (in >> c) {
         if (c == '(' || c == ')') {
-            if (!currentToken.str().empty()) {
-                tokens.push_back(currentToken.str());
-                currentToken.str("");
-            }
-            tokens.push_back(std::string{ c });
+            if (token.str().empty()) token << c;
+            else in.putback(c);
+            break;
         } else if (std::isspace(c)) {
-            if (!currentToken.str().empty()) {
-                tokens.push_back(currentToken.str());
-                currentToken.str("");
-            }
-        } else currentToken << c;
+            if (!token.str().empty()) break;
+            // else continue reading
+        } else if (c == EOF) {
+            break;
+        } else {
+            token << c;
+        }
     }
 
-    if (!currentToken.str().empty()) tokens.push_back(currentToken.str());
-
-    return tokens;
+    out = token.str();
+    return in;
 }
 
 bool isInteger(const std::string token)
@@ -42,34 +41,75 @@ bool isInteger(const std::string token)
     return std::all_of(begin, end, ::isdigit);
 }
 
-SchemeExpr readFromTokens(std::deque<std::string>& tokens)
-{
-    if (tokens.empty()) throw scheme_error("unexpected EOF while reading");
+std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out);
 
-    std::string token = tokens.front();
-    tokens.pop_front();
+void readSchemeExpr(const std::string& string, SchemeExpr& out)
+{
+    std::istringstream in(string);
+    readSchemeExpr(in, out);
+}
+
+std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
+{
+    std::string token;
+    readToken(in, token);
+    if (!in && token.empty()) {
+        throw scheme_error("Unexpected EOF while reading");
+    }
+
     if (token == "(") {
         SchemeList list;
-        while (tokens.front() != ")") {
-            list.push_back(readFromTokens(tokens));
+        std::string element;
+        while (readToken(in, element)) {
+            if (element == ")") break;
+            SchemeExpr expr;
+            if (element == "(") {
+                in.putback('(');
+                readSchemeExpr(in, expr);
+            } else {
+                readSchemeExpr(element, expr);
+            }
+            list.push_back(expr);
         }
-        tokens.pop_front();     // remove ")"
-        return list;
+        out = list;
     } else if (token == ")") {
-        throw scheme_error("unexpected ')'");
+        throw scheme_error("Unexpected ')");
     } else if (isInteger(token)) {
-        return std::atoi(token.c_str());
+        out = std::atoi(token.c_str());
     } else if (token == "#t") {
-        return true;
+        out = true;
     } else if (token == "#f") {
-        return false;
+        out = false;
     } else {
-        return token;
+        out = token;
     }
+
+    return in;
+}
+
+// tokenize() and parse() are only retained for testing
+
+std::deque<std::string> tokenize(const std::string string)
+{
+    std::deque<std::string> tokens;
+    std::string token;
+    std::istringstream in(string);
+    in >> std::noskipws;
+
+    while (readToken(in, token)) {
+        tokens.push_back(token);
+    }
+
+    if (!token.empty()) tokens.push_back(token);
+
+    return tokens;
 }
 
 SchemeExpr parse(const std::string& program)
 {
-    auto tokens = tokenize(program);
-    return readFromTokens(tokens);
+    std::istringstream in(program);
+    in >> std::noskipws;
+    SchemeExpr expr;
+    readSchemeExpr(in, expr);
+    return expr;
 }
