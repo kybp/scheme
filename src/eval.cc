@@ -29,7 +29,7 @@ evalVisitor::evalFuncall(const SchemeExpr& car, const SchemeArgs& args,
     SchemeArgs evalledArgs;
     std::transform(args.begin(), args.end(),
                    back_inserter(evalledArgs), evalVisitorArg );
-    return (*functionPointer(car))(args);
+    return (*functionPointer(car))(evalledArgs);
 }
 
 SchemeExpr evalVisitor::evalIf(const SchemeArgs& args, envPointer env) const

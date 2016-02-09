@@ -17,6 +17,10 @@ TEST(AdditionTests, NonIntegralThrows) {
     ASSERT_THROW(eval(parse("(+ 1 (quote foo) 2)")), scheme_error);
 }
 
+TEST(AdditionTests, ArgumentsAreEvaluated) {
+    ASSERT_EQ(6, intValue(eval(parse("(+ (+ 1 2) 3)"))));
+}
+
 // -
 
 TEST(SubtractionTests, NoArgsThrows) {
