@@ -48,7 +48,7 @@ SchemeExpr scmMul(const SchemeArgs& args)
     return std::accumulate(ints.begin(), ints.end(), 1, mul);
 }
 
-SchemeExpr scmLessThan(const SchemeArgs& args)
+SchemeExpr scmLesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
         std::ostringstream error;
@@ -78,6 +78,21 @@ SchemeExpr scmEqual(const SchemeArgs& args)
     }
 }
 
+SchemeExpr scmGreater(const SchemeArgs& args)
+{
+    if (args.size() < 2) {
+        std::ostringstream error;
+        error << "> requires at least two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        std::vector<int> ints;
+        std::transform(args.begin(), args.end(), back_inserter(ints),
+                       intValue);
+        return std::adjacent_find(ints.begin(), ints.end(),
+                                  std::less_equal<int>()) == ints.end();
+    }
+}
+
 SchemeExpr primitiveFunction(SchemeExpr (*fn)(const SchemeArgs&))
 {
     return SchemeExpr(std::make_shared<PrimitiveFunction>(fn));
@@ -92,7 +107,8 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
     names.push_back("-"); functions.push_back(primitiveFunction(scmSub));
     names.push_back("*"); functions.push_back(primitiveFunction(scmMul));
-    names.push_back("<"); functions.push_back(primitiveFunction(scmLessThan));
+    names.push_back("<"); functions.push_back(primitiveFunction(scmLesser));
+    names.push_back(">"); functions.push_back(primitiveFunction(scmGreater));
     names.push_back("="); functions.push_back(primitiveFunction(scmEqual));
     names.push_back("abs"); functions.push_back(primitiveFunction(scmAbs));
 

@@ -83,6 +83,25 @@ TEST(EqualTest, DifferentIntegersIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(= 2 2 3)"))));
 }
 
+// >
+
+TEST(GreaterTest, LessThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(>)")), scheme_error);
+    ASSERT_THROW(eval(parse("(> 1)")), scheme_error);
+}
+
+TEST(GreaterTest, LessThanIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(> 1 2)"))));
+}
+
+TEST(GreaterTest, EqualIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(> 2 2)"))));
+}
+
+TEST(GreaterTest, GreaterIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(> 3 2 1)"))));
+}
+
 // abs
 
 TEST(AbsTests, AbsPositiveInput) {
