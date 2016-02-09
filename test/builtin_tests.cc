@@ -14,7 +14,7 @@ TEST(AdditionTests, Identity) {
 }
 
 TEST(AdditionTests, NonIntegralThrows) {
-    ASSERT_THROW(eval(parse("(+ 1 foo 2)")), scheme_error);
+    ASSERT_THROW(eval(parse("(+ 1 (quote foo) 2)")), scheme_error);
 }
 
 // -
