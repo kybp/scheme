@@ -119,7 +119,6 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     std::vector<SchemeExpr> functions;
 
     names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
-    names.push_back("+"); functions.push_back(primitiveFunction(scmAdd));
     names.push_back("-"); functions.push_back(primitiveFunction(scmSub));
     names.push_back("*"); functions.push_back(primitiveFunction(scmMul));
     names.push_back("<"); functions.push_back(primitiveFunction(scmLesser));
