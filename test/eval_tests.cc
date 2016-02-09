@@ -11,6 +11,10 @@ TEST(EvalTest, EvalQuotedSymbol) {
     ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"))));
 }
 
+TEST(EvalTest, UndefinedVariableThrows) {
+    ASSERT_THROW(eval(parse("um")), scheme_error);
+}
+
 TEST(DefineTest, DefineVariable) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define x 2)"), env);

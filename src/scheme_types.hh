@@ -49,13 +49,15 @@ public:
         }
     }
 
-    SchemeEnvironment *find(const std::string& var) {
+    SchemeEnvironment find(const std::string& var) {
         if (definitions.find(var) != definitions.end()) {
-            return this;
+            return *this;
         } else if (outer != nullptr) {
             return outer->find(var);
         } else {
-            return nullptr;
+            std::ostringstream error;
+            error << "Undefined symbol: " << var;
+            throw scheme_error(var);
         }
     }
 

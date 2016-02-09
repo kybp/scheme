@@ -75,13 +75,5 @@ SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
 SchemeExpr
 evalVisitor::evalSymbol(const std::string& symbol, envPointer env) const
 {
-    SchemeEnvironment *definingEnv = env->find(symbol);
-
-    if (definingEnv == nullptr) {
-        std::ostringstream error;
-        error << "Undefined symbol: " << symbol;
-        throw scheme_error(error);
-    } else {
-        return (*definingEnv)[symbol];
-    }
+    return env->find(symbol)[symbol];
 }
