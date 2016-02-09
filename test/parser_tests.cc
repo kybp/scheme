@@ -74,3 +74,7 @@ TEST(ParserTest, ParseDoublyNestedList) {
     ASSERT_EQ(1, third.size());
     ASSERT_EQ(3, intValue(third[0]));
 }
+
+TEST(ParserTest, UnmatchedParensThrows) {
+    ASSERT_THROW(parse(")"), scheme_error);
+}
