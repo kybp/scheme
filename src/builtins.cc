@@ -63,15 +63,36 @@ SchemeExpr scmLessThan(const SchemeArgs& args)
     }
 }
 
+SchemeExpr scmEqual(const SchemeArgs& args)
+{
+    if (args.size() < 2) {
+        std::ostringstream error;
+        error << "= requires at least two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        std::vector<int> ints;
+        std::transform(args.begin(), args.end(), back_inserter(ints),
+                       intValue);
+        return std::adjacent_find(ints.begin(), ints.end(),
+                                  std::not_equal_to<int>()) == ints.end();
+    }
+}
+
+SchemeExpr primitiveFunction(SchemeExpr (*fn)(const SchemeArgs&))
+{
+    return SchemeExpr(std::make_shared<PrimitiveFunction>(fn));
+}
+
 SchemeEnvironment standardEnvironment()
 {
     SchemeEnvironment env;
 
-    env["+"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmAdd));
-    env["-"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmSub));
-    env["*"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmMul));
-    env["<"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmLessThan));
-    env["abs"] = SchemeExpr(std::make_shared<PrimitiveFunction>(scmAbs));
+    env["+"] = primitiveFunction(scmAdd);
+    env["-"] = primitiveFunction(scmSub);
+    env["*"] = primitiveFunction(scmMul);
+    env["<"] = primitiveFunction(scmLessThan);
+    env["="] = primitiveFunction(scmEqual);
+    env["abs"] = primitiveFunction(scmAbs);
 
     return env;
 }

@@ -60,6 +60,25 @@ TEST(LessThanTest, NonIntegerThrows) {
     ASSERT_THROW(eval(parse("(< (quote a) (quote b))")), scheme_error);
 }
 
+// =
+
+TEST(EqualTest, LessThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(=)")), scheme_error);
+    ASSERT_THROW(eval(parse("(= 1)")), scheme_error);
+}
+
+TEST(EqualTest, NonIntegerThrows) {
+    ASSERT_THROW(eval(parse("(= 2 (quote um))")), scheme_error);
+}
+
+TEST(EqualTest, SameIntegerIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(= 2 2)"))));
+}
+
+TEST(EqualTest, DifferentIntegersIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(= 2 2 3)"))));
+}
+
 // abs
 
 TEST(AbsTests, AbsPositiveInput) {
