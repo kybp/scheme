@@ -15,6 +15,10 @@ TEST(EvalTest, UndefinedVariableThrows) {
     ASSERT_THROW(eval(parse("um")), scheme_error);
 }
 
+TEST(EvalTest, UnquotedEmptyListThrows) {
+    ASSERT_THROW(eval(parse("()")), scheme_error);
+}
+
 TEST(DefineTest, DefineVariable) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define x 2)"), env);

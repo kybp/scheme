@@ -80,6 +80,7 @@ public:
     }
 
     SchemeExpr operator()(const SchemeList& list) const {
+        if (list.empty()) throw scheme_error("Missing function in ()");
         std::ostringstream carStream;
         carStream << list[0];
         std::string carStr = carStream.str();
@@ -114,6 +115,12 @@ evalVisitor::evalDefine(const SchemeArgs& args, envPointer env) const
 inline SchemeExpr eval(SchemeExpr e, std::shared_ptr<SchemeEnvironment> env)
 {
     return boost::apply_visitor(evalVisitor(env), e);
+}
+
+inline SchemeExpr
+evalVisitor::evalSymbol(const std::string& symbol, envPointer env) const
+{
+    return env->find(symbol)[symbol];
 }
 
 #endif

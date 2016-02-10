@@ -71,9 +71,3 @@ SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
     }
     return false;
 }
-
-SchemeExpr
-evalVisitor::evalSymbol(const std::string& symbol, envPointer env) const
-{
-    return env->find(symbol)[symbol];
-}
