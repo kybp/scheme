@@ -45,12 +45,6 @@ public:
     }
 };
 
-inline SchemeArgs tail(const SchemeList& list) {
-    SchemeArgs result;
-    std::copy(list.begin() + 1, list.end(), back_inserter(result));
-    return result;
-}
-
 class evalVisitor : public boost::static_visitor<SchemeExpr> {
     using envPointer = std::shared_ptr<SchemeEnvironment>;
     envPointer env;
@@ -81,12 +75,15 @@ public:
         return fn;
     }
 
-    SchemeExpr operator()(const SchemeList& list) const {
-        if (list.empty()) throw scheme_error("Missing function in ()");
+    SchemeExpr operator()(const Nil&) const {
+        throw scheme_error("Missing function in ()");
+    }
+
+    SchemeExpr operator()(const SchemeCons& cons) const {
         std::ostringstream carStream;
-        carStream << list[0];
+        carStream << car(cons);
         std::string carStr = carStream.str();
-        SchemeArgs args = tail(list);
+        SchemeArgs args = vectorFromExpr(cdr(cons));
              if (carStr == "quote")  return args.front();
         else if (carStr == "and")    return evalAnd(args, env);
         else if (carStr == "if")     return evalIf(args, env);
@@ -94,8 +91,8 @@ public:
         else if (carStr == "lambda") return evalLambda(args, env);
         else if (carStr == "or")     return evalOr(args, env);
         else {
-            SchemeExpr car = eval(list.front(), env);
-            return evalFuncall(car, args, env);
+            SchemeExpr op = eval(car(cons), env);
+            return evalFuncall(op, args, env);
         }
     }
 };

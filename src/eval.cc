@@ -50,7 +50,7 @@ SchemeExpr evalVisitor::evalIf(const SchemeArgs& args, envPointer env) const
 
 SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
 {
-    auto procArgs = listValue(args[0]);
+    auto procArgs = vectorFromExpr(args[0]);
     std::vector<std::string> params;
     std::transform(procArgs.begin(), procArgs.end(), back_inserter(params),
                    stringValue);

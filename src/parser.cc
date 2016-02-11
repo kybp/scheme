@@ -58,7 +58,7 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
     if (!readToken(in, token)) return in;
 
     if (token == "(") {
-        SchemeList list;
+        std::vector<SchemeExpr> listVec;
         for (;;) {
             std::string element;
             if (!readToken(in, element)) {
@@ -72,9 +72,10 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
             } else {
                 readSchemeExpr(element, expr);
             }
-            list.push_back(expr);
+            listVec.push_back(expr);
         }
-        out = list;
+
+        out = listVec.empty() ? SchemeExpr(Nil::Nil) : consFromVector(listVec);
     } else if (token == ")") {
         throw scheme_error("Unexpected ')");
     } else if (isInteger(token)) {

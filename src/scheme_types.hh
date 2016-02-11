@@ -11,13 +11,15 @@
 
 struct SchemeFunction;
 
+enum class Nil { Nil };
+
 typedef boost::make_recursive_variant<
     int, std::shared_ptr<SchemeFunction>, std::string, bool,
-    std::deque<boost::recursive_variant_>
+    std::pair<boost::recursive_variant_, boost::recursive_variant_>, Nil
     >::type SchemeExpr;
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 
-typedef std::deque<SchemeExpr> SchemeList;
+typedef std::pair<SchemeExpr, SchemeExpr> SchemeCons;
 
 class scheme_error : public std::exception {
     const std::string what_;
@@ -65,5 +67,63 @@ public:
         return definitions[symbol];
     }
 };
+
+inline SchemeCons consValue(const SchemeExpr& e)
+{
+    try {
+        return boost::get<SchemeCons>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
+        error << "Cons expected, got " << e;
+        throw scheme_error(error);
+    }
+}
+
+inline SchemeExpr car(const SchemeCons& c)
+{
+    return c.first;
+}
+
+inline SchemeExpr cdr(const SchemeCons& c)
+{
+    return c.second;
+}
+
+inline std::vector<SchemeExpr> vectorFromCons(SchemeCons cons)
+{
+    std::vector<SchemeExpr> v;
+
+    for (;;) {
+        v.push_back(car(cons));
+        if (SchemeExpr(Nil::Nil) == cdr(cons)) break;
+        cons = consValue(cdr(cons));
+    }
+
+    return v;
+}
+
+inline std::vector<SchemeExpr> vectorFromExpr(const SchemeExpr& expr)
+{
+    if (SchemeExpr(Nil::Nil) == expr) {
+        return {};
+    } else {
+        return vectorFromCons(consValue(expr));
+    }
+}
+
+inline SchemeCons consFromVector(const std::vector<SchemeExpr>& vector) {
+    if (vector.empty()) {
+        throw std::runtime_error("Can't convert empty vector to cons");
+    }
+
+    SchemeCons cons{ vector.back(), SchemeExpr(Nil::Nil) };
+    SchemeCons prev;
+    for (auto it = vector.rbegin() + 1; it != vector.rend(); ++it) {
+        prev = { *it, cons };
+        cons = prev;
+    }
+
+    return cons;
+}
 
 #endif

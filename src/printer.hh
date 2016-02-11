@@ -32,8 +32,14 @@ public:
         return os.str();
     }
 
-    std::string operator()(const SchemeList& list) const {
+    std::string operator()(const Nil&) const {
+        os << "()";
+        return os.str();
+    }
+
+    std::string operator()(const SchemeCons& cons) const {
         os << "(";
+        auto list = vectorFromCons(cons);
         switch (list.size()) {
         case 0:
             break;

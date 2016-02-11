@@ -54,33 +54,33 @@ TEST(ParserTest, ParsesSymbol) {
 }
 
 TEST(ParserTest, ParseEmptyList) {
-    ASSERT_TRUE(listValue(parse("()")).empty());
+    ASSERT_TRUE(vectorFromExpr(parse("()")).empty());
 }
 
 TEST(ParserTest, ParseOneElementList) {
-    auto actual = listValue(parse("(3)"));
+    auto actual = vectorFromExpr(parse("(3)"));
     ASSERT_EQ(1, actual.size());
     ASSERT_EQ(3, intValue(actual.front()));
 }
 
 TEST(ParserTest, ParseNestedList) {
-    auto actual = listValue(parse("(length (1 2))"));
+    auto actual = vectorFromExpr(parse("(length (1 2))"));
     ASSERT_EQ(2, actual.size());
     ASSERT_EQ("length", stringValue(actual[0]));
-    auto sublist = listValue(actual[1]);
+    auto sublist = vectorFromExpr(actual[1]);
     ASSERT_EQ(2, sublist.size());
     ASSERT_EQ(1, intValue(sublist[0]));
     ASSERT_EQ(2, intValue(sublist[1]));
 }
 
 TEST(ParserTest, ParseDoublyNestedList) {
-    auto first = listValue(parse("(1 (2 (3)))"));
+    auto first = vectorFromExpr(parse("(1 (2 (3)))"));
     ASSERT_EQ(2, first.size());
     ASSERT_EQ(1, intValue(first[0]));
-    auto second = listValue(first[1]);
+    auto second = vectorFromExpr(first[1]);
     ASSERT_EQ(2, second.size());
     ASSERT_EQ(2, intValue(second[0]));
-    auto third = listValue(second[1]);
+    auto third = vectorFromExpr(second[1]);
     ASSERT_EQ(1, third.size());
     ASSERT_EQ(3, intValue(third[0]));
 }

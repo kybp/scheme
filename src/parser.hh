@@ -54,15 +54,7 @@ inline std::shared_ptr<SchemeFunction> functionPointer(const SchemeExpr& e)
     }
 }
 
-inline SchemeList listValue(const SchemeExpr& e)
-{
-    try {
-        return boost::get<std::deque<SchemeExpr>>(e);
-    } catch (const boost::bad_get&) {
-        std::ostringstream error;
-        error << "List expected, got " << e;
-        throw scheme_error(error);
-    }
-}
+// consValue is in scheme_types.hh because it's needed for converting
+// a cons to a std::vector
 
 #endif
