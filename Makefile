@@ -73,10 +73,11 @@ eval_tests: parser.o builtins.o eval.o eval_tests.o gtest_main.a
 
 TESTS += printer_tests
 printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme_types.hh\
+	         $(SRC_DIR)/printer.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
-printer_tests: parser.o printer_tests.o gtest_main.a
+printer_tests: parser.o eval.o builtins.o printer_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += builtin_tests

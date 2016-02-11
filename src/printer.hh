@@ -37,20 +37,20 @@ public:
         return os.str();
     }
 
-    std::string operator()(const SchemeCons& cons) const {
+    std::string operator()(SchemeCons cons) const {
         os << "(";
-        auto list = vectorFromCons(cons);
-        switch (list.size()) {
-        case 0:
-            break;
-        case 1:
-            boost::apply_visitor(stringVisitor(os), list[0]);
-            break;
-        default:
-            os << list.front();
-            for (auto it = list.cbegin() + 1; it != list.cend(); ++it) {
+        for (;;) {
+            os << car(cons);
+            if (SchemeExpr(Nil::Nil) == cdr(cons)) {
+                break;
+            } else {
                 os << " ";
-                boost::apply_visitor(stringVisitor(os), *it);
+            }
+            try {
+                cons = consValue(cdr(cons));
+            } catch (const scheme_error&) {
+                os << ". " << cdr(cons);
+                break;
             }
         }
         os << ")";

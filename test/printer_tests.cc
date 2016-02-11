@@ -1,5 +1,6 @@
 #include <sstream>
 #include "gtest/gtest.h"
+#include "builtins.hh" // for scheme::cons
 #include "parser.hh"
 #include "printer.hh"
 #include "scheme_types.hh"
@@ -44,4 +45,10 @@ TEST(PrintTest, NestedList) {
     std::ostringstream s;
     s << parse("(foo (bar (baz)))");
     ASSERT_EQ("(foo (bar (baz)))", s.str());
+}
+
+TEST(PrintTest, DottedList) {
+    std::ostringstream s;
+    s << eval(parse("(cons 1 2)"));
+    ASSERT_EQ("(1 . 2)", s.str());
 }
