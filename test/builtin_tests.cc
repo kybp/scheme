@@ -170,6 +170,28 @@ TEST(ConsTests, RetrievableWithCar) {
     ASSERT_EQ(1, intValue(eval(parse("(car (cons 1 2))"))));
 }
 
+// cons?
+
+TEST(ConsPTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(cons?)")), scheme_error);
+}
+
+TEST(ConsPTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(cons? 1 2)")), scheme_error);
+}
+
+TEST(ConsPTests, ConsIsACons) {
+    ASSERT_TRUE(boolValue(eval(parse("(cons? (cons 1 2))"))));
+}
+
+TEST(ConsPTests, NotConsIsNotACons) {
+    ASSERT_FALSE(boolValue(eval(parse("(cons? 1)"))));
+}
+
+TEST(ConsPTests, NilIsNotACons) {
+    ASSERT_FALSE(boolValue(eval(parse("(cons? (quote ()))"))));
+}
+
 // eq?
 
 TEST(EqTests, LessThanTwoArgsThrows) {
