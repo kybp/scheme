@@ -2,6 +2,7 @@
 #define EVAL_HH
 
 #include <deque>
+#include <iostream>
 #include <string>
 #include <vector>
 #include <boost/variant.hpp>
@@ -10,6 +11,7 @@
 
 typedef std::vector<SchemeExpr> SchemeArgs;
 SchemeExpr eval(SchemeExpr e, std::shared_ptr<SchemeEnvironment> env);
+std::istream& evalStream(std::istream&, std::shared_ptr<SchemeEnvironment>);
 
 struct SchemeFunction {
     virtual SchemeExpr operator()(const SchemeArgs& args) = 0;

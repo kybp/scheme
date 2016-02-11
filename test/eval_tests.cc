@@ -90,3 +90,16 @@ TEST(AndTest, AnyFalseArgIsFalse) {
 TEST(AndTest, AllTrueArgsReturnsLast) {
     ASSERT_EQ(3, intValue(eval(parse("(and 1 2 3)"))));
 }
+
+TEST(EvalStreamTest, NoErrorOnEmptyStream) {
+    std::istringstream in;
+    auto env = standardEnvironment();
+    ASSERT_NO_THROW(evalStream(in, env));
+}
+
+TEST(EvalStreamTest, EnvironmentChangesVisible) {
+    std::istringstream in("(define square (lambda (x) (* x x)))");
+    auto env = standardEnvironment();
+    evalStream(in, env);
+    ASSERT_EQ(4, intValue(eval(parse("(square 2)"), env)));
+}

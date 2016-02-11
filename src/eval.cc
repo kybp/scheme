@@ -71,3 +71,11 @@ SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
     }
     return false;
 }
+
+std::istream& evalStream(std::istream& in,
+                         std::shared_ptr<SchemeEnvironment> env)
+{
+    SchemeExpr expr;
+    while (readSchemeExpr(in, expr)) eval(expr, env);
+    return in;
+}

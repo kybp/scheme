@@ -55,16 +55,14 @@ void readSchemeExpr(const std::string& string, SchemeExpr& out)
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 {
     std::string token;
-    if (!readToken(in, token)) {
-        throw scheme_error("Unexpected EOF while reading");
-    }
+    if (!readToken(in, token)) return in;
 
     if (token == "(") {
         SchemeList list;
         for (;;) {
             std::string element;
             if (!readToken(in, element)) {
-                throw scheme_error("Unmatched '(");
+                throw scheme_error("Unmatched '('");
             }
             if (element == ")") break;
             SchemeExpr expr;
