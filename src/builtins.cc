@@ -7,24 +7,21 @@
 #include "eval.hh"
 #include "scheme_types.hh"
 
-SchemeExpr eval(const SchemeExpr& e)
-{
-    return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
-}
+namespace scheme {
 
-SchemeExpr scmAbs(const SchemeArgs& args)
+SchemeExpr abs(const SchemeArgs& args)
 {
     return std::abs(intValue(args.front()));
 }
 
-SchemeExpr scmAdd(const SchemeArgs& args)
+SchemeExpr add(const SchemeArgs& args)
 {
     std::vector<int> ints;
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
     return std::accumulate(ints.begin(), ints.end(), 0);
 }
 
-SchemeExpr scmSub(const SchemeArgs& args)
+SchemeExpr sub(const SchemeArgs& args)
 {
     if (args.empty()) {
         throw scheme_error("- requires at least one argument, passed 0");
@@ -40,7 +37,7 @@ SchemeExpr scmSub(const SchemeArgs& args)
     }
 }
 
-SchemeExpr scmMul(const SchemeArgs& args)
+SchemeExpr mul(const SchemeArgs& args)
 {
     auto mul = [](int x, int y) { return x * y; };
     std::vector<int> ints;
@@ -48,7 +45,7 @@ SchemeExpr scmMul(const SchemeArgs& args)
     return std::accumulate(ints.begin(), ints.end(), 1, mul);
 }
 
-SchemeExpr scmLesser(const SchemeArgs& args)
+SchemeExpr lesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
         std::ostringstream error;
@@ -63,7 +60,7 @@ SchemeExpr scmLesser(const SchemeArgs& args)
     }
 }
 
-SchemeExpr scmEqual(const SchemeArgs& args)
+SchemeExpr equal(const SchemeArgs& args)
 {
     if (args.size() < 2) {
         std::ostringstream error;
@@ -78,7 +75,7 @@ SchemeExpr scmEqual(const SchemeArgs& args)
     }
 }
 
-SchemeExpr scmGreater(const SchemeArgs& args)
+SchemeExpr greater(const SchemeArgs& args)
 {
     if (args.size() < 2) {
         std::ostringstream error;
@@ -93,7 +90,7 @@ SchemeExpr scmGreater(const SchemeArgs& args)
     }
 }
 
-SchemeExpr scmNot(const SchemeArgs& args)
+SchemeExpr _not(const SchemeArgs& args)
 {
     if (args.size() != 1) {
         std::ostringstream error;
@@ -108,7 +105,7 @@ SchemeExpr scmNot(const SchemeArgs& args)
     }
 }
 
-SchemeExpr scmEq(const SchemeArgs& args)
+SchemeExpr eq(const SchemeArgs& args)
 {
     if (args.size() != 2) {
         std::ostringstream error;
@@ -117,6 +114,13 @@ SchemeExpr scmEq(const SchemeArgs& args)
     } else {
         return stringValue(args[0]) == stringValue(args[1]);
     }
+}
+
+} // end namespace
+
+SchemeExpr eval(const SchemeExpr& e)
+{
+    return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
 }
 
 inline void addPrimitive(std::vector<std::string>& names,
@@ -134,15 +138,15 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     std::vector<std::string> names;
     std::vector<SchemeExpr> functions;
 
-    addPrimitive(names, functions, "+", scmAdd);
-    addPrimitive(names, functions, "-", scmSub);
-    addPrimitive(names, functions, "*", scmMul);
-    addPrimitive(names, functions, "<", scmLesser);
-    addPrimitive(names, functions, ">", scmGreater);
-    addPrimitive(names, functions, "=", scmEqual);
-    addPrimitive(names, functions, "abs", scmAbs);
-    addPrimitive(names, functions, "eq?", scmEq);
-    addPrimitive(names, functions, "not", scmNot);
+    addPrimitive(names, functions, "+", scheme::add);
+    addPrimitive(names, functions, "-", scheme::sub);
+    addPrimitive(names, functions, "*", scheme::mul);
+    addPrimitive(names, functions, "<", scheme::lesser);
+    addPrimitive(names, functions, ">", scheme::greater);
+    addPrimitive(names, functions, "=", scheme::equal);
+    addPrimitive(names, functions, "abs", scheme::abs);
+    addPrimitive(names, functions, "eq?", scheme::eq);
+    addPrimitive(names, functions, "not", scheme::_not);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));
