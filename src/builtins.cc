@@ -93,6 +93,17 @@ SchemeExpr consp(const SchemeArgs& args)
     }
 }
 
+SchemeExpr nullp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "null? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return SchemeExpr(Nil::Nil) == args.front();
+    }
+}
+
 SchemeExpr lesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
@@ -199,6 +210,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "cons?", scheme::consp);
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "not", scheme::_not);
+    addPrimitive(names, functions, "null?", scheme::nullp);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));

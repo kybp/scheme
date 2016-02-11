@@ -238,3 +238,21 @@ TEST(NotTests, NotTrueIsFalse) {
 TEST(NotTests, NotFalseIsTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(not #f)"))));
 }
+
+// null?
+
+TEST(NullTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(null?)")), scheme_error);
+}
+
+TEST(NullTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(null? 1 2)")), scheme_error);
+}
+
+TEST(NullTests, NilIsNull) {
+    ASSERT_TRUE(boolValue(eval(parse("(null? (quote ()))"))));
+}
+
+TEST(NullTests, NotNilIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(null? 1)"))));
+}
