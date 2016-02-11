@@ -61,8 +61,11 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 
     if (token == "(") {
         SchemeList list;
-        std::string element;
-        while (readToken(in, element)) {
+        for (;;) {
+            std::string element;
+            if (!readToken(in, element)) {
+                throw scheme_error("Unmatched '(");
+            }
             if (element == ")") break;
             SchemeExpr expr;
             if (element == "(") {

@@ -85,6 +85,10 @@ TEST(ParserTest, ParseDoublyNestedList) {
     ASSERT_EQ(3, intValue(third[0]));
 }
 
-TEST(ParserTest, UnmatchedParensThrows) {
+TEST(ParserTest, UnmatchedCloseParensThrows) {
     ASSERT_THROW(parse(")"), scheme_error);
+}
+
+TEST(ParserTest, UnmatchedOpenParenThrows) {
+    ASSERT_THROW(parse("("), scheme_error);
 }
