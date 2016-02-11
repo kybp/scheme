@@ -134,6 +134,24 @@ TEST(CarTests, CarReturnsFirstExpr) {
     ASSERT_EQ(1, intValue(eval(parse("(car (quote (1)))"))));
 }
 
+// cons
+
+TEST(ConsTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(cons)")), scheme_error);
+}
+
+TEST(ConsTests, OneArgThrows) {
+    ASSERT_THROW(eval(parse("(cons 1)")), scheme_error);
+}
+
+TEST(ConsTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(cons 1 2 3)")), scheme_error);
+}
+
+TEST(ConsTests, RetrievableWithCar) {
+    ASSERT_EQ(1, intValue(eval(parse("(car (cons 1 2))"))));
+}
+
 // eq?
 
 TEST(EqTests, LessThanTwoArgsThrows) {

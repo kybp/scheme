@@ -56,6 +56,16 @@ SchemeExpr car(const SchemeArgs& args)
     }
 }
 
+SchemeExpr cons(const SchemeArgs& args) {
+    if (args.size() != 2) {
+        std::ostringstream error;
+        error << "cons requires two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return SchemeCons{ args[0], args[1] };
+    }
+}
+
 SchemeExpr lesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
@@ -157,6 +167,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "=", scheme::equal);
     addPrimitive(names, functions, "abs", scheme::abs);
     addPrimitive(names, functions, "car", scheme::car);
+    addPrimitive(names, functions, "cons", scheme::cons);
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "not", scheme::_not);
 
