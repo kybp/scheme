@@ -111,3 +111,16 @@ TEST(EvalStreamTest, EnvironmentChangesVisible) {
     evalStream(in, env);
     ASSERT_EQ(4, intValue(eval(parse("(square 2)"), env)));
 }
+
+TEST(SetTest, SetUndefinedVariableThrows) {
+    auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
+    ASSERT_THROW(eval(parse("(set! x 3)"), env), scheme_error);
+}
+
+TEST(SetTest, SetRedefinesVariable) {
+    auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
+    eval(parse("(define x 1)"), env);
+    ASSERT_EQ(1, intValue(eval(parse("x"), env)));
+    eval(parse("(set! x 2)"), env);
+    ASSERT_EQ(2, intValue(eval(parse("x"), env)));
+}

@@ -30,7 +30,8 @@ public:
         { return what_.c_str(); }
 };
 
-class SchemeEnvironment {
+class SchemeEnvironment
+    : public std::enable_shared_from_this<SchemeEnvironment> {
     std::map<std::string, SchemeExpr> definitions;
     std::shared_ptr<SchemeEnvironment> outer;
 public:
@@ -51,15 +52,13 @@ public:
         }
     }
 
-    SchemeEnvironment find(const std::string& var) {
+    std::shared_ptr<SchemeEnvironment> find(const std::string& var) {
         if (definitions.find(var) != definitions.end()) {
-            return *this;
+            return shared_from_this();
         } else if (outer != nullptr) {
             return outer->find(var);
         } else {
-            std::ostringstream error;
-            error << "Undefined symbol: " << var;
-            throw scheme_error(error);
+            return nullptr;
         }
     }
 
