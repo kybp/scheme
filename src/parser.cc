@@ -77,7 +77,7 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 
         out = listVec.empty() ? SchemeExpr(Nil::Nil) : consFromVector(listVec);
     } else if (token == ")") {
-        throw scheme_error("Unexpected ')");
+        throw scheme_error("Unexpected ')'");
     } else if (isInteger(token)) {
         out = std::atoi(token.c_str());
     } else if (token == "#t") {
