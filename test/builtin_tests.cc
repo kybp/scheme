@@ -134,6 +134,24 @@ TEST(CarTests, CarReturnsFirstExpr) {
     ASSERT_EQ(1, intValue(eval(parse("(car (quote (1)))"))));
 }
 
+// cdr
+
+TEST(CdrTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(cdr)")), scheme_error);
+}
+
+TEST(CdrTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(cdr (quote (1)) (quote (2)))")), scheme_error);
+}
+
+TEST(CdrTests, NonConsArgThrows) {
+    ASSERT_THROW(eval(parse("(cdr 1)")), scheme_error);
+}
+
+TEST(CdrTests, RetrievesCdrFromCons) {
+    ASSERT_EQ(2, intValue(eval(parse("(cdr (cons 1 2))"))));
+}
+
 // cons
 
 TEST(ConsTests, NoArgsThrows) {

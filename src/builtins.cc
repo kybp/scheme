@@ -56,6 +56,17 @@ SchemeExpr car(const SchemeArgs& args)
     }
 }
 
+SchemeExpr cdr(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "cdr requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return ::cdr(consValue(args.front()));
+    }
+}
+
 SchemeExpr cons(const SchemeArgs& args) {
     if (args.size() != 2) {
         std::ostringstream error;
@@ -167,6 +178,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "=", scheme::equal);
     addPrimitive(names, functions, "abs", scheme::abs);
     addPrimitive(names, functions, "car", scheme::car);
+    addPrimitive(names, functions, "cdr", scheme::cdr);
     addPrimitive(names, functions, "cons", scheme::cons);
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "not", scheme::_not);
