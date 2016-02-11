@@ -45,6 +45,17 @@ SchemeExpr mul(const SchemeArgs& args)
     return std::accumulate(ints.begin(), ints.end(), 1, mul);
 }
 
+SchemeExpr car(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "car requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return ::car(consValue(args.front()));
+    }
+}
+
 SchemeExpr lesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
@@ -145,6 +156,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, ">", scheme::greater);
     addPrimitive(names, functions, "=", scheme::equal);
     addPrimitive(names, functions, "abs", scheme::abs);
+    addPrimitive(names, functions, "car", scheme::car);
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "not", scheme::_not);
 

@@ -108,12 +108,30 @@ TEST(GreaterTest, GreaterIsTrue) {
 
 // abs
 
-TEST(AbsTests, AbsPositiveInput) {
+TEST(AbsTests, PositiveInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs 1)"))));
 }
 
-TEST(AbsTests, AbsNegativeInput) {
+TEST(AbsTests, NegativeInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
+}
+
+// car
+
+TEST(CarTests, CarOfNilThrows) {
+    ASSERT_THROW(eval(parse("(car (quote ()))")), scheme_error);
+}
+
+TEST(CarTests, NonConsArgThrows) {
+    ASSERT_THROW(eval(parse("(car 3)")), scheme_error);
+}
+
+TEST(CarTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(car (quote (1)) (quote (2)))")), scheme_error);
+}
+
+TEST(CarTests, CarReturnsFirstExpr) {
+    ASSERT_EQ(1, intValue(eval(parse("(car (quote (1)))"))));
 }
 
 // eq?

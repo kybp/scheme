@@ -72,6 +72,17 @@ SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
     return false;
 }
 
+SchemeExpr evalVisitor::evalQuote(const SchemeArgs& args) const
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "quote requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return args.front();
+    }
+}
+
 std::istream& evalStream(std::istream& in,
                          std::shared_ptr<SchemeEnvironment> env)
 {

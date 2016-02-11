@@ -7,16 +7,24 @@ TEST(EvalTest, EvalSelfEvaluating) {
     ASSERT_EQ(3, intValue(eval(parse("3"))));
 }
 
-TEST(EvalTest, EvalQuotedSymbol) {
-    ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"))));
-}
-
 TEST(EvalTest, UndefinedVariableThrows) {
     ASSERT_THROW(eval(parse("um")), scheme_error);
 }
 
 TEST(EvalTest, UnquotedEmptyListThrows) {
     ASSERT_THROW(eval(parse("()")), scheme_error);
+}
+
+TEST(QuoteTest, UndefinedSymbolReturnedIntact) {
+    ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"))));
+}
+
+TEST(QuoteTest, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(quote)")), scheme_error);
+}
+
+TEST(QuoteTest, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(quote 1 2)")), scheme_error);
 }
 
 TEST(DefineTest, DefineVariable) {

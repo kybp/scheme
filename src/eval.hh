@@ -56,6 +56,7 @@ class evalVisitor : public boost::static_visitor<SchemeExpr> {
     SchemeExpr evalLambda(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalOr(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalSymbol(const std::string& symbol, envPointer env) const;
+    SchemeExpr evalQuote(const SchemeArgs& args) const;
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
 
@@ -84,7 +85,7 @@ public:
         carStream << car(cons);
         std::string carStr = carStream.str();
         SchemeArgs args = vectorFromExpr(cdr(cons));
-             if (carStr == "quote")  return args.front();
+             if (carStr == "quote")  return evalQuote(args);
         else if (carStr == "and")    return evalAnd(args, env);
         else if (carStr == "if")     return evalIf(args, env);
         else if (carStr == "define") return evalDefine(args, env);
