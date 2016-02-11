@@ -4,18 +4,28 @@
 #include "parser.hh"
 #include "scheme_types.hh"
 
+std::vector<std::string> tokenize(const std::string& string)
+{
+    std::vector<std::string> tokens;
+    std::istringstream in(string);
+    std::string token;
+    in >> std::noskipws;
+    while (readToken(in, token)) tokens.push_back(token);
+    return tokens;
+}
+
 TEST(TokenizerTest, EmptyInputGivesNoTokens) {
     ASSERT_TRUE(tokenize("").empty());
 }
 
 TEST(TokenizerTest, SpacesDelimitTokens) {
-    std::deque<std::string> expectedTokens{ "1", "2", "3" };
-    ASSERT_EQ(expectedTokens, tokenize("1 2 3"));
+    std::vector<std::string> expected{ "1", "2", "3" };
+    ASSERT_EQ(expected, tokenize("1 2 3"));
 }
 
 TEST(TokenizerTest, ParensAreTokens) {
-    std::deque<std::string> expectedTokens{ "(", "+", "1", "2", ")" };
-    ASSERT_EQ(expectedTokens, tokenize("(+ 1 2)"));
+    std::vector<std::string> expected{ "(", "+", "1", "2", ")" };
+    ASSERT_EQ(expected, tokenize("(+ 1 2)"));
 }
 
 TEST(ParserTest, ParsesInteger) {

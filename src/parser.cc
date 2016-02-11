@@ -10,6 +10,7 @@
 
 std::istream& readToken(std::istream& in, std::string& out)
 {
+    in >> std::noskipws;
     std::ostringstream token;
     char c;
 
@@ -21,14 +22,16 @@ std::istream& readToken(std::istream& in, std::string& out)
         } else if (std::isspace(c)) {
             if (!token.str().empty()) break;
             // else continue reading
-        } else if (c == EOF) {
-            break;
         } else {
             token << c;
         }
     }
 
     out = token.str();
+    if (in.eof() && !out.empty()) {
+        in.putback(EOF);
+        in.clear();
+    }
     return in;
 }
 
@@ -52,8 +55,7 @@ void readSchemeExpr(const std::string& string, SchemeExpr& out)
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 {
     std::string token;
-    readToken(in, token);
-    if (!in && token.empty()) {
+    if (!readToken(in, token)) {
         throw scheme_error("Unexpected EOF while reading");
     }
 
@@ -87,28 +89,11 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
     return in;
 }
 
-// tokenize() and parse() are only retained for testing
-
-std::deque<std::string> tokenize(const std::string string)
-{
-    std::deque<std::string> tokens;
-    std::string token;
-    std::istringstream in(string);
-    in >> std::noskipws;
-
-    while (readToken(in, token)) {
-        tokens.push_back(token);
-    }
-
-    if (!token.empty()) tokens.push_back(token);
-
-    return tokens;
-}
+// parse() is only retained for testing
 
 SchemeExpr parse(const std::string& program)
 {
     std::istringstream in(program);
-    in >> std::noskipws;
     SchemeExpr expr;
     readSchemeExpr(in, expr);
     return expr;

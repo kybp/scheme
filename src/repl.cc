@@ -8,7 +8,6 @@
 int main()
 {
     auto env = standardEnvironment();
-    std::cin >> std::noskipws;
 
     do {
         try {

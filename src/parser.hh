@@ -6,8 +6,8 @@
 #include "printer.hh"
 #include "scheme_types.hh"
 
-std::deque<std::string> tokenize(const std::string string);
 SchemeExpr parse(const std::string& expression);
+std::istream& readToken(std::istream& in, std::string& out);
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out);
 
 inline int intValue(const SchemeExpr& e)
