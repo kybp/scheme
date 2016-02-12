@@ -2,7 +2,7 @@
 #include "scheme_types.hh"
 
 SchemeEnvironment::SchemeEnvironment(
-    const std::vector<std::string>& params,
+    const std::vector<SchemeSymbol>& params,
     const std::vector<SchemeExpr>& args,
     bool hasRestParam,
     std::shared_ptr<SchemeEnvironment> outer)
@@ -25,10 +25,10 @@ SchemeEnvironment::SchemeEnvironment(
     if (hasRestParam && args.empty()) {
         // The rest param has to be the only one, as we've already
         // checked we have enough required args
-        definitions[params[0]] = SchemeExpr(Nil::Nil);
+        definitions[params[0].string] = SchemeExpr(Nil::Nil);
     } else {
         for (std::size_t i = 0; i < params.size(); ++i) {
-            definitions[params[i]] = args[i];
+            definitions[params[i].string] = args[i];
         }
     }
 
@@ -37,9 +37,10 @@ SchemeEnvironment::SchemeEnvironment(
         std::copy(args.begin() + params.size() - 1, args.end(),
                   back_inserter(rest));
         if (rest.empty()) {
-            definitions[params[params.size() - 1]] = Nil::Nil;
+            definitions[params[params.size() - 1].string] = Nil::Nil;
         } else {
-            definitions[params[params.size() - 1]] = consFromVector(rest);
+            definitions[params[params.size() - 1].string] =
+                consFromVector(rest);
         }
     }
 }

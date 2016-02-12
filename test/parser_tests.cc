@@ -50,7 +50,7 @@ TEST(ParserTest, ParseFalse) {
 }
 
 TEST(ParserTest, ParsesSymbol) {
-    ASSERT_EQ("foo", stringValue(parse("foo")));
+    ASSERT_EQ("foo", symbolValue(parse("foo")).string);
 }
 
 TEST(ParserTest, ParseEmptyList) {
@@ -66,7 +66,7 @@ TEST(ParserTest, ParseOneElementList) {
 TEST(ParserTest, ParseNestedList) {
     auto actual = vectorFromExpr(parse("(length (1 2))"));
     ASSERT_EQ(2, actual.size());
-    ASSERT_EQ("length", stringValue(actual[0]));
+    ASSERT_EQ("length", symbolValue(actual[0]).string);
     auto sublist = vectorFromExpr(actual[1]);
     ASSERT_EQ(2, sublist.size());
     ASSERT_EQ(1, intValue(sublist[0]));

@@ -22,9 +22,14 @@ public:
         return os.str();
     }
 
-    std::string operator()(const std::string& symbol) const {
-        os << symbol;
-        return symbol;
+    std::string operator()(const std::string& string) const {
+        os << '"' << string << '"';
+        return os.str();
+    }
+
+    std::string operator()(const SchemeSymbol& symbol) const {
+        os << symbol.string;
+        return os.str();
     }
 
     std::string operator()(const std::shared_ptr<SchemeFunction>&) const {
@@ -60,7 +65,7 @@ public:
 
 inline std::ostream& operator<<(std::ostream& os, const SchemeExpr& e)
 {
-    // This and the list case in stringVisitor don't use stringValue()
+    // This and the list case in stringVisitor don't use symbolValue()
     // to avoid a circular dependency with parser.hh
     std::ostringstream ss;
     boost::apply_visitor(stringVisitor(ss), e);

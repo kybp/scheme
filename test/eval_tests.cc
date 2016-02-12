@@ -16,7 +16,7 @@ TEST(EvalTest, UnquotedEmptyListThrows) {
 }
 
 TEST(QuoteTest, UndefinedSymbolReturnedIntact) {
-    ASSERT_EQ("foo", stringValue(eval(parse("(quote foo)"))));
+    ASSERT_EQ("foo", symbolValue(eval(parse("(quote foo)"))).string);
 }
 
 TEST(QuoteTest, NoArgsThrows) {

@@ -27,6 +27,17 @@ inline std::string stringValue(const SchemeExpr& e)
         return boost::get<std::string>(e);
     } catch (const boost::bad_get&) {
         std::ostringstream error;
+        error << "String expected, got " << e;
+        throw scheme_error(error);
+    }
+}
+
+inline SchemeSymbol symbolValue(const SchemeExpr& e)
+{
+    try {
+        return boost::get<SchemeSymbol>(e);
+    } catch (const boost::bad_get&) {
+        std::ostringstream error;
         error << "Symbol expected, got " << e;
         throw scheme_error(error);
     }

@@ -13,8 +13,20 @@ struct SchemeFunction;
 
 enum class Nil { Nil };
 
+struct SchemeSymbol {
+    std::string string;
+
+    bool operator==(const SchemeSymbol& rhs) const {
+        return rhs.string == string;
+    }
+
+    bool operator!=(const SchemeSymbol& rhs) const {
+        return !(*this == rhs);
+    }
+};
+
 typedef boost::make_recursive_variant<
-    int, std::shared_ptr<SchemeFunction>, std::string, bool,
+    int, std::shared_ptr<SchemeFunction>, std::string, SchemeSymbol, bool,
     std::pair<boost::recursive_variant_, boost::recursive_variant_>, Nil
     >::type SchemeExpr;
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
@@ -40,18 +52,18 @@ class SchemeEnvironment
 public:
     SchemeEnvironment() = default;
 
-    SchemeEnvironment(const std::vector<std::string>& params,
+    SchemeEnvironment(const std::vector<SchemeSymbol>& params,
                       const std::vector<SchemeExpr>& args)
         : SchemeEnvironment(params, args, false)
     {}
 
-    SchemeEnvironment(const std::vector<std::string>& params,
+    SchemeEnvironment(const std::vector<SchemeSymbol>& params,
                       const std::vector<SchemeExpr>& args,
                       bool hasRestParam)
         : SchemeEnvironment(params, args, hasRestParam, nullptr)
     {}
 
-    SchemeEnvironment(const std::vector<std::string>& params,
+    SchemeEnvironment(const std::vector<SchemeSymbol>& params,
                       const std::vector<SchemeExpr>& args,
                       bool hasRestParam,
                       std::shared_ptr<SchemeEnvironment> outer);

@@ -85,7 +85,7 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
     } else if (token == "#f") {
         out = false;
     } else {
-        out = token;
+        out = SchemeSymbol{token};
     }
 
     return in;

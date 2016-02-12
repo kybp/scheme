@@ -64,15 +64,15 @@ SchemeExpr evalVisitor::evalIf(const SchemeArgs& args, envPointer env) const
 SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
 {
     auto procArgs = vectorFromExpr(args[0]);
-    std::vector<std::string> params;
+    std::vector<SchemeSymbol> params;
     bool hasRestParam = false;
 
     for (std::size_t i = 0; i < procArgs.size(); ++i) {
         if (procArgs[i] != parse("&rest")) {
-            params.push_back(stringValue(procArgs[i]));
+            params.push_back(symbolValue(procArgs[i]));
         } else if (i == procArgs.size() - 2) { // only one rest parameter
             hasRestParam = true;
-            params.push_back(stringValue(procArgs[i + 1]));
+            params.push_back(symbolValue(procArgs[i + 1]));
             break;
         } else {
             throw scheme_error("Illegal rest parameter in lambda list");

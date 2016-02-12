@@ -29,12 +29,12 @@ public:
 };
 
 class LexicalFunction : public SchemeFunction {
-    std::vector<std::string> params;
+    std::vector<SchemeSymbol> params;
     SchemeExpr body;
     bool hasRestParam;
     std::shared_ptr<SchemeEnvironment> env;
 public:
-    LexicalFunction(std::vector<std::string> params, SchemeExpr body,
+    LexicalFunction(std::vector<SchemeSymbol> params, SchemeExpr body,
                     bool hasRestParam, std::shared_ptr<SchemeEnvironment> env)
         : params(params), body(body), hasRestParam(hasRestParam), env(env)
     {}
@@ -58,7 +58,7 @@ class evalVisitor : public boost::static_visitor<SchemeExpr> {
     SchemeExpr evalLambda(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalOr(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalSet(const SchemeArgs& args, envPointer env) const;
-    SchemeExpr evalSymbol(const std::string& symbol, envPointer env) const;
+    SchemeExpr evalSymbol(const SchemeSymbol& symbol, envPointer env) const;
     SchemeExpr evalQuote(const SchemeArgs& args) const;
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
@@ -71,7 +71,11 @@ public:
         return b;
     }
 
-    SchemeExpr operator()(const std::string& symbol) const {
+    SchemeExpr operator()(const std::string& string) const {
+        return string;
+    }
+
+    SchemeExpr operator()(const SchemeSymbol& symbol) const {
         return evalSymbol(symbol, env);
     }
 
@@ -107,8 +111,8 @@ inline SchemeExpr
 evalVisitor::evalDefine(const SchemeArgs& args, envPointer env) const
 {
     if (args.size() == 2) {
-        auto var = stringValue(args[0]);
-        (*env)[var] = eval(args[1], env);
+        auto var = symbolValue(args[0]);
+        (*env)[var.string] = eval(args[1], env);
         return args.front();
     } else {
         std::ostringstream error;
@@ -125,25 +129,25 @@ evalVisitor::evalSet(const SchemeArgs& args, envPointer env) const
         error << "set! requires two arguments, passed " << args.size();
         throw scheme_error(error);
     } else {
-        auto var = stringValue(args[0]);
-        auto definingEnv = env->find(var);
+        auto var = symbolValue(args[0]);
+        auto definingEnv = env->find(var.string);
         if (definingEnv == nullptr) {
             std::ostringstream error;
             error << "Undefined symbol: " << var;
             throw scheme_error(error);
         } else {
-            (*definingEnv)[var] = eval(args[1], env);
+            (*definingEnv)[var.string] = eval(args[1], env);
             return var;
         }
     }
 }
 
 inline SchemeExpr
-evalVisitor::evalSymbol(const std::string& symbol, envPointer env) const
+evalVisitor::evalSymbol(const SchemeSymbol& symbol, envPointer env) const
 {
-    envPointer definingEnv = env->find(symbol);
+    envPointer definingEnv = env->find(symbol.string);
     if (definingEnv) {
-        return (*definingEnv)[symbol];
+        return (*definingEnv)[symbol.string];
     } else {
         std::ostringstream error;
         error << "Undefined symbol: " << symbol;

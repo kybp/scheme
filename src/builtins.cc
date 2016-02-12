@@ -182,7 +182,7 @@ SchemeExpr eq(const SchemeArgs& args)
         error << "eq? requires two arguments, passed " << args.size();
         throw scheme_error(error);
     } else {
-        return stringValue(args[0]) == stringValue(args[1]);
+        return symbolValue(args[0]) == symbolValue(args[1]);
     }
 }
 
@@ -193,19 +193,19 @@ SchemeExpr eval(const SchemeExpr& e)
     return boost::apply_visitor(evalVisitor(standardEnvironment()), e);
 }
 
-inline void addPrimitive(std::vector<std::string>& names,
+inline void addPrimitive(std::vector<SchemeSymbol>& names,
                          std::vector<SchemeExpr>& functions,
                          const std::string& name,
                          SchemeExpr (*function)(const SchemeArgs&))
 {
     auto primitive = SchemeExpr(std::make_shared<PrimitiveFunction>(function));
-    names.push_back(name);
+    names.push_back(symbolValue(parse(name)));
     functions.push_back(primitive);
 }
 
 std::shared_ptr<SchemeEnvironment> standardEnvironment()
 {
-    std::vector<std::string> names;
+    std::vector<SchemeSymbol> names;
     std::vector<SchemeExpr> functions;
 
     addPrimitive(names, functions, "+", scheme::add);
