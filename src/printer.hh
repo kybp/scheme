@@ -34,7 +34,12 @@ public:
     }
 
     std::string operator()(const std::string& string) const {
-        os << '"' << string << '"';
+        os << '"';
+        for (char c : string) {
+            if (c == '"') os << "\\\"";
+            else os << c;
+        }
+        os << '"';
         return os.str();
     }
 

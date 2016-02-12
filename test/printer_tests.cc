@@ -17,55 +17,61 @@ TEST(PrintTest, PrintSymbol) {
     ASSERT_EQ("foo", s.str());
 }
 
-TEST(PrintTest, EmptyList) {
+TEST(ListTests, EmptyList) {
     std::ostringstream s;
     s << parse("()");
     ASSERT_EQ("()", s.str());
 }
 
-TEST(PrintTest, OneElementList) {
+TEST(ListTests, OneElementList) {
     std::ostringstream s;
     s << parse("(1)");
     ASSERT_EQ("(1)", s.str());
 }
 
-TEST(PrintTest, MultiElementList) {
+TEST(ListTests, MultiElementList) {
     std::ostringstream s;
     s << parse("(1 2 3)");
     ASSERT_EQ("(1 2 3)", s.str());
 }
 
-TEST(PrintTest, InsertSpacesBeforeParens) {
+TEST(ListTests, InsertSpacesBeforeParens) {
     std::ostringstream s;
     s << parse("(1(2)3)");
     ASSERT_EQ("(1 (2) 3)", s.str());
 }
 
-TEST(PrintTest, NestedList) {
+TEST(ListTests, NestedList) {
     std::ostringstream s;
     s << parse("(foo (bar (baz)))");
     ASSERT_EQ("(foo (bar (baz)))", s.str());
 }
 
-TEST(PrintTest, DottedList) {
+TEST(ListTests, DottedList) {
     std::ostringstream s;
     s << eval(parse("(cons 1 2)"));
     ASSERT_EQ("(1 . 2)", s.str());
 }
 
-TEST(PrintTest, String) {
+TEST(StringTests, String) {
     std::ostringstream s;
     s << parse("\"um\"");
     ASSERT_EQ("\"um\"", s.str());
 }
 
-TEST(PrintTest, Character) {
+TEST(StringTests, EscapedQuotesPrintEscaped) {
+    std::ostringstream s;
+    s << parse("\"\\\"um\\\"\"");
+    ASSERT_EQ("\"\\\"um\\\"\"", s.str());
+}
+
+TEST(CharacterTests, Character) {
     std::ostringstream s;
     s << parse("#\\h");
     ASSERT_EQ("#\\h", s.str());
 }
 
-TEST(PrintTest, WhitespaceCharacterUsesSymbolicName) {
+TEST(CharacterTests, WhitespaceUsesSymbolicName) {
     std::ostringstream s;
     s << parse("#\\Space");
     ASSERT_EQ("#\\Space", s.str());
