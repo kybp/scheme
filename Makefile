@@ -2,8 +2,11 @@ CPPFLAGS = -g -std=c++11 -Wall -Wextra
 SRC_DIR = src
 TEST_DIR = test
 
-scheme: $(SRC_DIR)/repl.cc parser.o builtins.o eval.o
+scheme: $(SRC_DIR)/repl.cc parser.o builtins.o eval.o scheme_types.o
 	$(CXX) $(CPPFLAGS) $^ -o $@
+
+scheme_types.o: $(SRC_DIR)/scheme_types.hh
+	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/scheme_types.cc
 
 eval.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/eval.hh $(SRC_DIR)/eval.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/eval.cc
@@ -59,7 +62,7 @@ parser_tests.o: $(TEST_DIR)/parser_tests.cc\
 	        $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/parser_tests.cc
 
-parser_tests: parser.o parser_tests.o gtest_main.a
+parser_tests: scheme_types.o parser.o parser_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += eval_tests
@@ -68,7 +71,7 @@ eval_tests.o: $(TEST_DIR)/eval_tests.cc $(SRC_DIR)/scheme_types.hh\
 	      $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/eval_tests.cc
 
-eval_tests: parser.o builtins.o eval.o eval_tests.o gtest_main.a
+eval_tests: scheme_types.o parser.o builtins.o eval.o eval_tests.o gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += printer_tests
@@ -77,7 +80,8 @@ printer_tests.o: $(TEST_DIR)/printer_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/printer_tests.cc
 
-printer_tests: parser.o eval.o builtins.o printer_tests.o gtest_main.a
+printer_tests: scheme_types.o parser.o eval.o builtins.o printer_tests.o\
+	       gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 TESTS += builtin_tests
@@ -85,7 +89,8 @@ builtin_tests.o: $(TEST_DIR)/builtin_tests.cc $(SRC_DIR)/scheme_types.hh\
 	         $(GTEST_HEADERS)
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(TEST_DIR)/builtin_tests.cc
 
-builtin_tests: eval.o parser.o builtins.o builtin_tests.o gtest_main.a
+builtin_tests: scheme_types.o eval.o parser.o builtins.o builtin_tests.o\
+	       gtest_main.a
 	$(CXX) $(CPPFLAGS) -pthread $^ -o $@
 
 tests: $(TESTS)
