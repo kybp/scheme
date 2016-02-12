@@ -18,7 +18,13 @@ public:
     }
 
     std::string operator()(char c) const {
-        os << "#\\" << c;
+        os << "#\\";
+        switch (c) {
+        case ' ':  os << "Space";   break;
+        case '\n': os << "Newline"; break;
+        case '\t': os << "Tab";     break;
+        default: os << c; break;
+        }
         return os.str();
     }
 

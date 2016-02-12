@@ -52,3 +52,21 @@ TEST(PrintTest, DottedList) {
     s << eval(parse("(cons 1 2)"));
     ASSERT_EQ("(1 . 2)", s.str());
 }
+
+TEST(PrintTest, String) {
+    std::ostringstream s;
+    s << parse("\"um\"");
+    ASSERT_EQ("\"um\"", s.str());
+}
+
+TEST(PrintTest, Character) {
+    std::ostringstream s;
+    s << parse("#\\h");
+    ASSERT_EQ("#\\h", s.str());
+}
+
+TEST(PrintTest, WhitespaceCharacterUsesSymbolicName) {
+    std::ostringstream s;
+    s << parse("#\\Space");
+    ASSERT_EQ("#\\Space", s.str());
+}
