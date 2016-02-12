@@ -62,17 +62,33 @@ public:
             error << "passed " << args.size();
             throw scheme_error(error);
         }
-        
-        for (std::size_t i = 0; i < params.size(); ++i) {
-            definitions[params[i]] = args[i];
+
+        if (hasRestParam && params.size() - 1 > args.size()) {
+            std::ostringstream error;
+            error << "Function expected at least " << params.size() - 1;
+            error << " arguments, passed " << args.size();
+            throw scheme_error(error);
+        }
+
+        if (hasRestParam && args.empty()) {
+            // The rest param has to be the only one, as we've already
+            // checked we have enough required args
+            definitions[params[0]] = SchemeExpr(Nil::Nil);
+        } else {
+            for (std::size_t i = 0; i < params.size(); ++i) {
+                definitions[params[i]] = args[i];
+            }
         }
 
         if (hasRestParam) {
             std::vector<SchemeExpr> rest;
             std::copy(args.begin() + params.size() - 1, args.end(),
                       back_inserter(rest));
-            definitions[params[params.size() - 1]] =
-                consFromVector(rest);
+            if (rest.empty()) {
+                definitions[params[params.size() - 1]] = Nil::Nil;
+            } else {
+                definitions[params[params.size() - 1]] = consFromVector(rest);
+            }
         }
     }
 

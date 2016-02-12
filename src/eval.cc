@@ -60,7 +60,7 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
         string << procArgs[i];
         if (string.str() != ".") {
             params.push_back(stringValue(procArgs[i]));
-        } else if (i == args.size() - 2) { // only one rest parameter
+        } else if (i == procArgs.size() - 2) { // only one rest parameter
             hasRestParam = true;
             params.push_back(stringValue(procArgs[i + 1]));
             break;

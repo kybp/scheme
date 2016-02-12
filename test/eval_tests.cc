@@ -76,6 +76,19 @@ TEST(LambdaTest, RestParameter) {
     ASSERT_EQ(3, intValue(eval(parse("(num-args 1 2 3)"), env)));
 }
 
+TEST(LambdaTest, EmptyRestParameter) {
+    auto env = standardEnvironment();
+    eval(parse("(define f (lambda (. args) (length args)))"), env);
+    ASSERT_EQ(0, intValue(eval(parse("(f)"), env)));
+}
+
+TEST(LambdaTest, RestParameterWithRequiredParameters) {
+    auto env = standardEnvironment();
+    eval(parse("(define f (lambda (x . args) (cons x args)))"), env);
+    ASSERT_EQ(3, intValue(eval(parse("(length (f 1 2 3))"), env)));
+    ASSERT_THROW(eval(parse("(f)"), env), scheme_error);
+}
+
 TEST(OrTest, NoArgsIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(or)"))));
 }
