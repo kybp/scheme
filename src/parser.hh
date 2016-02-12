@@ -10,6 +10,17 @@ SchemeExpr parse(const std::string& expression);
 std::istream& readToken(std::istream& in, std::string& out);
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out);
 
+inline char charValue(const SchemeExpr& e)
+{
+    try {
+        return boost::get<char>(e);
+    } catch (const boost::bad_get&){
+        std::ostringstream error;
+        error << "Character expected, got " << e;
+        throw scheme_error(error);
+    }
+}
+
 inline int intValue(const SchemeExpr& e)
 {
     try {

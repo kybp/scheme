@@ -2,7 +2,7 @@
 
 Simple C++11 Scheme interpreter based off Peter Norvig's
 [lis.py](http://norvig.com/lispy.html). For datatypes, only fixnums,
-symbols, strings, functions, bools, and conses have been
+symbols, characters, strings, functions, bools, and conses have been
 implemented. For special forms, there is begin, define, set!, lambda,
 if, and, or, and quote. For primitive functions, there is +, -, *,
 abs, eq?, equal?, car, cdr, cons, cons?, length, not, null?, <, >, and

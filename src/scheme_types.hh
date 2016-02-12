@@ -26,8 +26,9 @@ struct SchemeSymbol {
 };
 
 typedef boost::make_recursive_variant<
-    int, std::shared_ptr<SchemeFunction>, std::string, SchemeSymbol, bool,
-    std::pair<boost::recursive_variant_, boost::recursive_variant_>, Nil
+    int, char, bool, std::string, SchemeSymbol, Nil,
+    std::shared_ptr<SchemeFunction>,
+    std::pair<boost::recursive_variant_, boost::recursive_variant_>
     >::type SchemeExpr;
 std::ostream& operator<<(std::ostream& os, const SchemeExpr& e);
 

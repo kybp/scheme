@@ -63,12 +63,16 @@ class evalVisitor : public boost::static_visitor<SchemeExpr> {
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
 
-    SchemeExpr operator()(int i) const {
-        return i;
-    }
-
     SchemeExpr operator()(bool b) const {
         return b;
+    }
+
+    SchemeExpr operator()(char c) const {
+        return c;
+    }
+
+    SchemeExpr operator()(int i) const {
+        return i;
     }
 
     SchemeExpr operator()(const std::string& string) const {

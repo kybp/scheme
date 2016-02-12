@@ -19,6 +19,12 @@ std::istream& readToken(std::istream& in, std::string& out)
             if (token.str().empty()) token << c;
             else in.putback(c);
             break;
+        } else if (c == '#' && in.peek() == '\\') {
+            if (token.str().empty()) {
+                in >> c;        // read the backslash too
+                token << "#\\";
+            } else in.putback(c);
+            break;
         } else if (std::isspace(c)) {
             if (!token.str().empty()) break;
             // else continue reading
@@ -32,6 +38,51 @@ std::istream& readToken(std::istream& in, std::string& out)
         in.putback(EOF);
         in.clear();
     }
+    return in;
+}
+
+char designatorToChar(const std::string& designator)
+{
+    if (designator.empty()) throw scheme_error("char from empty designator");
+    if (designator.length() == 1) return designator[0];
+
+    std::string lowercase(designator);
+    std::transform(designator.begin(), designator.end(), lowercase.begin(),
+                   ::tolower);
+
+         if (lowercase == "space")   return ' ';
+    else if (lowercase == "newline") return '\n';
+    else if (lowercase == "tab")     return '\t';
+    else {
+        std::ostringstream error;
+        error << "Unrecognized character name: " << designator;
+        throw scheme_error(error);
+    }
+}
+
+std::istream& readChar(std::istream& in, char& out)
+{
+    in >> std::noskipws;
+    std::ostringstream designator;
+    char c;
+
+    while (in >> c) {
+        if (c == '(' || c == ')' || c == '"' || std::isspace(c)) {
+            if (designator.str().empty()) designator << c;
+            else in.putback(c);
+            break;
+        } else {
+            designator << c;
+        }
+    }
+
+    out = designatorToChar(designator.str());
+
+    if (in.eof() && !designator.str().empty()) {
+        in.putback(EOF);
+        in.clear();
+    }
+
     return in;
 }
 
@@ -88,6 +139,10 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
         out = listVec.empty() ? SchemeExpr(Nil::Nil) : consFromVector(listVec);
     } else if (token == ")") {
         throw scheme_error("Unexpected ')'");
+    } else if (token == "#\\") {
+        char c;
+        if (readChar(in, c)) out = c;
+        else throw scheme_error("Unexpected EOF in character literal");
     } else if (isInteger(token)) {
         out = std::atoi(token.c_str());
     } else if (token == "#t") {

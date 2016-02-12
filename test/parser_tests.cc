@@ -108,3 +108,27 @@ TEST(ParserTest, MultilineStringLiteral) {
 TEST(ParserTest, MultipleStringsInAList) {
     ASSERT_NO_THROW(parse("(quote \"um\" \"hi\")"));
 }
+
+TEST(ParserTest, CharacterLiteral) {
+    ASSERT_EQ('h', charValue(parse("#\\h")));
+}
+
+TEST(ParserTest, UnfinishedCharacterLiteralThrows) {
+    ASSERT_THROW(parse("#\\"), scheme_error);
+}
+
+TEST(ParserTest, NewlineSymbolicName) {
+    ASSERT_EQ('\n', charValue(parse("#\\Newline")));
+}
+
+TEST(ParserTest, SpaceSymbolicName) {
+    ASSERT_EQ(' ', charValue(parse("#\\Space")));
+}
+
+TEST(ParserTest, TabSymbolicName) {
+    ASSERT_EQ('\t', charValue(parse("#\\Tab")));
+}
+
+TEST(ParserTest, UnrecognizedSymbolicNameThrows) {
+    ASSERT_THROW(parse("#\\um"), scheme_error);
+}

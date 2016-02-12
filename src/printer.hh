@@ -12,13 +12,18 @@ class stringVisitor : public boost::static_visitor<SchemeExpr> {
 public:
     stringVisitor(std::ostringstream& os) : os(os) {}
 
-    std::string operator()(int i) const {
-        os << i;
+    std::string operator()(bool b) const {
+        os << (b ? "#t" : "#f");
         return os.str();
     }
 
-    std::string operator()(bool b) const {
-        os << (b ? "#t" : "#f");
+    std::string operator()(char c) const {
+        os << "#\\" << c;
+        return os.str();
+    }
+
+    std::string operator()(int i) const {
+        os << i;
         return os.str();
     }
 
