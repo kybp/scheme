@@ -342,3 +342,29 @@ TEST(StringLengthTests, EmptyStringIsZeroLength) {
 TEST(StringLengthTests, StringLength) {
     ASSERT_EQ(2, intValue(eval(parse("(string-length \"um\")"))));
 }
+
+// string-ref
+
+TEST(StringRefTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(string-ref)")), scheme_error);
+}
+
+TEST(StringRefTests, OneArgThrows) {
+    ASSERT_THROW(eval(parse("(string-ref \"um\")")), scheme_error);
+}
+
+TEST(StringRefTests, MoreThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(string-ref \"um\" 1 2)")), scheme_error);
+}
+
+TEST(StringRefTests, NonStringFirstArgThrows) {
+    ASSERT_THROW(eval(parse("(string-ref (quote um) 1)")), scheme_error);
+}
+
+TEST(StringRefTests, NonIntegerSecondArgThrows) {
+    ASSERT_THROW(eval(parse("(string-ref \"um\" #\\u)")), scheme_error);
+}
+
+TEST(StringRefTests, ValidIndexGetsCharacter) {
+    ASSERT_EQ('u', charValue(eval(parse("(string-ref \"um\" 0)"))));
+}

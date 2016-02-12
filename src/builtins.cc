@@ -208,6 +208,25 @@ SchemeExpr stringLength(const SchemeArgs& args)
     }
 }
 
+SchemeExpr stringRef(const SchemeArgs& args)
+{
+    if (args.size() != 2) {
+        std::ostringstream error;
+        error << "string-ref requires two arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        auto string = stringValue(args[0]);
+        auto index  = static_cast<std::size_t>(intValue(args[1]));
+        if (index >= string.length()) {
+            std::ostringstream error;
+            error << "Index " << index << " out of bounds for " << string;
+            throw scheme_error(error);
+        } else {
+            return string[index];
+        }
+    }
+}
+
 SchemeExpr display(const SchemeArgs& args)
 {
     if (args.size() != 1) {
@@ -277,6 +296,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "not", scheme::_not);
     addPrimitive(names, functions, "null?", scheme::nullp);
     addPrimitive(names, functions, "string-length", scheme::stringLength);
+    addPrimitive(names, functions, "string-ref", scheme::stringRef);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));
