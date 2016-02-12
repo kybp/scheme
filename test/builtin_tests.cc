@@ -320,3 +320,25 @@ TEST(NullTests, NilIsNull) {
 TEST(NullTests, NotNilIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(null? 1)"))));
 }
+
+// string-length
+
+TEST(StringLengthTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(string-length)")), scheme_error);
+}
+
+TEST(StringLengthTests, MoreThanOneArgsThrows) {
+    ASSERT_THROW(eval(parse("(string-length \"um\" \"hi\")")), scheme_error);
+}
+
+TEST(StringLengthTests, NonStringArgThrows) {
+    ASSERT_THROW(eval(parse("(string-length (quote (1 2 3)))")), scheme_error);
+}
+
+TEST(StringLengthTests, EmptyStringIsZeroLength) {
+    ASSERT_EQ(0, intValue(eval(parse("(string-length \"\")"))));
+}
+
+TEST(StringLengthTests, StringLength) {
+    ASSERT_EQ(2, intValue(eval(parse("(string-length \"um\")"))));
+}

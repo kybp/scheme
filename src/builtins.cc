@@ -197,6 +197,45 @@ SchemeExpr equalp(const SchemeArgs& args)
     }
 }
 
+SchemeExpr stringLength(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "string-length requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return static_cast<int>(stringValue(args.front()).length());
+    }
+}
+
+SchemeExpr display(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "display requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            std::cout << boost::get<std::string>(args.front());
+        } catch (const boost::bad_get&) {
+            std::cout << args.front();
+        }
+        return false;
+    }
+}
+
+SchemeExpr newline(const SchemeArgs& args)
+{
+    if (!args.empty()) {
+        std::ostringstream error;
+        error << "newline does not take arguments, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        std::cout << std::endl;
+        return false;
+    }
+}
+
 } // end namespace
 
 SchemeExpr eval(const SchemeExpr& e)
@@ -230,11 +269,14 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "cdr", scheme::cdr);
     addPrimitive(names, functions, "cons", scheme::cons);
     addPrimitive(names, functions, "cons?", scheme::consp);
+    addPrimitive(names, functions, "display", scheme::display);
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "equal?", scheme::equalp);
     addPrimitive(names, functions, "length", scheme::length);
+    addPrimitive(names, functions, "newline", scheme::newline);
     addPrimitive(names, functions, "not", scheme::_not);
     addPrimitive(names, functions, "null?", scheme::nullp);
+    addPrimitive(names, functions, "string-length", scheme::stringLength);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));
