@@ -22,6 +22,19 @@ SchemeExpr evalVisitor::evalAnd(const SchemeArgs& args, envPointer env) const
 }
 
 SchemeExpr
+evalVisitor::evalBegin(const SchemeArgs& args, envPointer env) const
+{
+    if (args.empty()) throw scheme_error("Empty begin form");
+
+    SchemeExpr result;
+    for (const auto& expr : args) {
+        result = eval(expr, env);
+    }
+
+    return result;
+}
+
+SchemeExpr
 evalVisitor::evalFuncall(const SchemeExpr& car, const SchemeArgs& args,
                          envPointer env) const
 {
@@ -54,11 +67,8 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
     std::vector<std::string> params;
     bool hasRestParam = false;
 
-
     for (std::size_t i = 0; i < procArgs.size(); ++i) {
-        std::ostringstream string;
-        string << procArgs[i];
-        if (string.str() != "&rest") {
+        if (procArgs[i] != parse("&rest")) {
             params.push_back(stringValue(procArgs[i]));
         } else if (i == procArgs.size() - 2) { // only one rest parameter
             hasRestParam = true;
@@ -69,8 +79,12 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
         }
     }
 
+    auto bodyVector = args;
+    bodyVector[0] = parse("begin");
+    auto bodyExpr = consFromVector(bodyVector);
+
     return std::make_shared<LexicalFunction>(
-        LexicalFunction(params, args[1], hasRestParam, env));
+        LexicalFunction(params, bodyExpr, hasRestParam, env));
 }
 
 SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const

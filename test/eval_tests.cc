@@ -89,6 +89,10 @@ TEST(LambdaTest, RestParameterWithRequiredParameters) {
     ASSERT_THROW(eval(parse("(f)"), env), scheme_error);
 }
 
+TEST(LambdaTest, ReturnValueOfLastExprInBody) {
+    ASSERT_EQ(3, intValue(eval(parse("((lambda () 1 2 3))"))));
+}
+
 TEST(OrTest, NoArgsIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(or)"))));
 }
@@ -142,4 +146,12 @@ TEST(SetTest, SetRedefinesVariable) {
     ASSERT_EQ(1, intValue(eval(parse("x"), env)));
     eval(parse("(set! x 2)"), env);
     ASSERT_EQ(2, intValue(eval(parse("x"), env)));
+}
+
+TEST(BeginTest, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(begin)")), scheme_error);
+}
+
+TEST(BeginTest, ReturnsLastExpression) {
+    ASSERT_EQ(3, intValue(eval(parse("(begin 1 2 3)"))));
 }
