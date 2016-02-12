@@ -76,8 +76,8 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
             }
             if (element == ")") break;
             SchemeExpr expr;
-            if (element == "(") {
-                in.putback('(');
+            if (element == "(" || element == "\"") {
+                in.putback(element[0]);
                 readSchemeExpr(in, expr);
             } else {
                 readSchemeExpr(element, expr);

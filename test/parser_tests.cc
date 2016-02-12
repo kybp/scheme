@@ -104,3 +104,7 @@ TEST(ParserTest, StringWithSpaces) {
 TEST(ParserTest, MultilineStringLiteral) {
     ASSERT_EQ("um\nhi", stringValue(parse("\"um\nhi\"")));
 }
+
+TEST(ParserTest, MultipleStringsInAList) {
+    ASSERT_NO_THROW(parse("(quote \"um\" \"hi\")"));
+}

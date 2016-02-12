@@ -70,20 +70,20 @@ TEST(LessThanTest, NonIntegerThrows) {
 
 // =
 
-TEST(EqualTest, LessThanTwoArgsThrows) {
+TEST(EqualOpTest, LessThanTwoArgsThrows) {
     ASSERT_THROW(eval(parse("(=)")), scheme_error);
     ASSERT_THROW(eval(parse("(= 1)")), scheme_error);
 }
 
-TEST(EqualTest, NonIntegerThrows) {
+TEST(EqualOpTest, NonIntegerThrows) {
     ASSERT_THROW(eval(parse("(= 2 (quote um))")), scheme_error);
 }
 
-TEST(EqualTest, SameIntegerIsTrue) {
+TEST(EqualOpTest, SameIntegerIsTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(= 2 2)"))));
 }
 
-TEST(EqualTest, DifferentIntegersIsFalse) {
+TEST(EqualOpTest, DifferentIntegersIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(= 2 2 3)"))));
 }
 
@@ -216,7 +216,45 @@ TEST(EqTests, UnequalSymbolsIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(eq? (quote foo) (quote bar))"))));
 }
 
-// length tests
+// equal?
+
+TEST(EqualTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(equal?)")), scheme_error);
+}
+
+TEST(EqualTests, OneArgThrows) {
+    ASSERT_THROW(eval(parse("(equal? #t)")), scheme_error);
+}
+
+TEST(EqualTests, MoreThanTwoArgsThrows) {
+    ASSERT_THROW(eval(parse("(equal? #t #t #t)")), scheme_error);
+}
+
+TEST(EqualTests, CompareBools) {
+    ASSERT_TRUE(boolValue(eval(parse("(equal? #t #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(equal? #t #f)"))));
+}
+
+TEST(EqualTests, CompareStrings) {
+    ASSERT_TRUE(boolValue(eval(parse("(equal? \"um\" \"um\")"))));
+    ASSERT_FALSE(boolValue(eval(parse("(equal? \"um\" \"hi\")"))));
+}
+
+TEST(EqualTests, CompareLists) {
+    ASSERT_TRUE(boolValue(eval(parse("(equal? (cons 1 (quote ()))\
+                                              (cons 1 (quote ())))"))));
+    ASSERT_FALSE(boolValue(eval(parse("(equal? (cons 1 (quote ()))\
+                                               (cons 2 (quote ())))"))));
+    ASSERT_TRUE(boolValue(eval(parse("(equal? (cons 1 (cons 2 (quote ())))\
+                                              (cons 1 (cons 2 (quote ()))))"
+                                   ))));
+}
+
+TEST(EqualTests, CompareListWithNil) {
+    ASSERT_FALSE(boolValue(eval(parse("(equal? (quote (1 2 3)) (quote ()))"))));
+}
+
+// length
 
 TEST(LengthTests, NoArgsThrows) {
     ASSERT_THROW(eval(parse("(length)")), scheme_error);
