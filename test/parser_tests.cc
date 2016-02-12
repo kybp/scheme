@@ -92,3 +92,15 @@ TEST(ParserTest, UnmatchedCloseParensThrows) {
 TEST(ParserTest, UnmatchedOpenParenThrows) {
     ASSERT_THROW(parse("("), scheme_error);
 }
+
+TEST(ParserTest, EmptyString) {
+    ASSERT_EQ("", stringValue(parse("\"\"")));
+}
+
+TEST(ParserTest, StringWithSpaces) {
+    ASSERT_EQ("um hi", stringValue(parse("\"um hi\"")));
+}
+
+TEST(ParserTest, MultilineStringLiteral) {
+    ASSERT_EQ("um\nhi", stringValue(parse("\"um\nhi\"")));
+}

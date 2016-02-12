@@ -15,7 +15,7 @@ std::istream& readToken(std::istream& in, std::string& out)
     char c;
 
     while (in >> c) {
-        if (c == '(' || c == ')') {
+        if (c == '(' || c == ')' || c == '"') {
             if (token.str().empty()) token << c;
             else in.putback(c);
             break;
@@ -52,6 +52,16 @@ void readSchemeExpr(const std::string& string, SchemeExpr& out)
     readSchemeExpr(in, out);
 }
 
+std::istream& readUntil(std::istream& in, char delimiter, std::string& out)
+{
+    in >> std::noskipws;
+    std::ostringstream string;
+    char c;
+    while (in >> c && c != delimiter) string << c;
+    out = string.str();
+    return in;
+}
+
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 {
     std::string token;
@@ -84,6 +94,10 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
         out = true;
     } else if (token == "#f") {
         out = false;
+    } else if (token == "\"") {
+        std::string string;
+        if (readUntil(in, '"', string)) out = string;
+        else throw scheme_error("Unclosed string literal");
     } else {
         out = SchemeSymbol{token};
     }
