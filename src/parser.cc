@@ -108,7 +108,20 @@ std::istream& readUntil(std::istream& in, char delimiter, std::string& out)
     in >> std::noskipws;
     std::ostringstream string;
     char c;
-    while (in >> c && c != delimiter) string << c;
+    bool escaped = false;
+    while (in >> c) {
+        if (escaped) {
+            escaped = false;
+            switch (c) {
+            case 'n': string << '\n'; break;
+            case 't': string << '\t'; break;
+            default: string << c; break;
+            }
+        }
+        else if (c == '\\') escaped = true;
+        else if (c == delimiter) break;
+        else string << c;
+    }
     out = string.str();
     return in;
 }

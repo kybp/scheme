@@ -28,42 +28,42 @@ TEST(TokenizerTest, ParensAreTokens) {
     ASSERT_EQ(expected, tokenize("(+ 1 2)"));
 }
 
-TEST(ParserTest, ParsesInteger) {
+TEST(IntegerTest, Unsigned) {
     ASSERT_EQ(3, intValue(parse("3")));
 }
 
-TEST(ParserTest, ParseNegativeInteger) {
+TEST(IntegerTest, NegativeInteger) {
     ASSERT_EQ(-1, intValue(parse("-1")));
 }
 
-TEST(ParserTest, MinusSignIsNotNumber) {
+TEST(IntegerTest, MinusSignIsNotNumber) {
     bool isInteger(const std::string token);
     ASSERT_FALSE(isInteger("-"));
 }
 
-TEST(ParserTest, ParseTrue) {
+TEST(BoolTest, True) {
     ASSERT_EQ(true, boolValue(parse("#t")));
 }
 
-TEST(ParserTest, ParseFalse) {
+TEST(BoolTest, False) {
     ASSERT_EQ(false, boolValue(parse("#f")));
 }
 
-TEST(ParserTest, ParsesSymbol) {
+TEST(BoolTest, Symbol) {
     ASSERT_EQ("foo", symbolValue(parse("foo")).string);
 }
 
-TEST(ParserTest, ParseEmptyList) {
+TEST(ListTest, EmptyList) {
     ASSERT_TRUE(vectorFromExpr(parse("()")).empty());
 }
 
-TEST(ParserTest, ParseOneElementList) {
+TEST(ListTest, OneElementList) {
     auto actual = vectorFromExpr(parse("(3)"));
     ASSERT_EQ(1, actual.size());
     ASSERT_EQ(3, intValue(actual.front()));
 }
 
-TEST(ParserTest, ParseNestedList) {
+TEST(ListTest, NestedList) {
     auto actual = vectorFromExpr(parse("(length (1 2))"));
     ASSERT_EQ(2, actual.size());
     ASSERT_EQ("length", symbolValue(actual[0]).string);
@@ -73,7 +73,7 @@ TEST(ParserTest, ParseNestedList) {
     ASSERT_EQ(2, intValue(sublist[1]));
 }
 
-TEST(ParserTest, ParseDoublyNestedList) {
+TEST(Test, DoublyNestedList) {
     auto first = vectorFromExpr(parse("(1 (2 (3)))"));
     ASSERT_EQ(2, first.size());
     ASSERT_EQ(1, intValue(first[0]));
@@ -85,50 +85,62 @@ TEST(ParserTest, ParseDoublyNestedList) {
     ASSERT_EQ(3, intValue(third[0]));
 }
 
-TEST(ParserTest, UnmatchedCloseParensThrows) {
+TEST(ListTest, UnmatchedCloseParensThrows) {
     ASSERT_THROW(parse(")"), scheme_error);
 }
 
-TEST(ParserTest, UnmatchedOpenParenThrows) {
+TEST(Test, UnmatchedOpenParenThrows) {
     ASSERT_THROW(parse("("), scheme_error);
 }
 
-TEST(ParserTest, EmptyString) {
+TEST(StringTest, EmptyString) {
     ASSERT_EQ("", stringValue(parse("\"\"")));
 }
 
-TEST(ParserTest, StringWithSpaces) {
+TEST(StringTest, EmbeddedSpaces) {
     ASSERT_EQ("um hi", stringValue(parse("\"um hi\"")));
 }
 
-TEST(ParserTest, MultilineStringLiteral) {
+TEST(StringTest, EmbeddedNewline) {
     ASSERT_EQ("um\nhi", stringValue(parse("\"um\nhi\"")));
 }
 
-TEST(ParserTest, MultipleStringsInAList) {
+TEST(StringTest, MultipleStringsInAList) {
     ASSERT_NO_THROW(parse("(quote \"um\" \"hi\")"));
 }
 
-TEST(ParserTest, CharacterLiteral) {
+TEST(StringTest, BackslashEscapesDelimiter) {
+    ASSERT_EQ("\"um\"", stringValue(parse("\"\\\"um\\\"\"")));
+}
+
+TEST(StringTest, BackslashNIsNewline) {
+    ASSERT_EQ("um\nhi", stringValue(parse("\"um\\nhi\"")));
+}
+
+TEST(StringTest, BackslashTIsTab) {
+    ASSERT_EQ("um\thi", stringValue(parse("\"um\\thi\"")));
+}
+
+TEST(CharacterTest, SimpleLiteral) {
     ASSERT_EQ('h', charValue(parse("#\\h")));
 }
 
-TEST(ParserTest, UnfinishedCharacterLiteralThrows) {
+TEST(CharacterTest, UnfinishedCharacterLiteralThrows) {
     ASSERT_THROW(parse("#\\"), scheme_error);
 }
 
-TEST(ParserTest, NewlineSymbolicName) {
+TEST(CharacterTest, NewlineSymbolicName) {
     ASSERT_EQ('\n', charValue(parse("#\\Newline")));
 }
 
-TEST(ParserTest, SpaceSymbolicName) {
+TEST(CharacterTest, SpaceSymbolicName) {
     ASSERT_EQ(' ', charValue(parse("#\\Space")));
 }
 
-TEST(ParserTest, TabSymbolicName) {
+TEST(CharacterTest, TabSymbolicName) {
     ASSERT_EQ('\t', charValue(parse("#\\Tab")));
 }
 
-TEST(ParserTest, UnrecognizedSymbolicNameThrows) {
+TEST(CharacterTest, UndefinedSymbolicNameThrows) {
     ASSERT_THROW(parse("#\\um"), scheme_error);
 }
