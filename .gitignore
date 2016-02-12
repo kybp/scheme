@@ -2,5 +2,5 @@
 *.o
 *.a
 *_tests
-scheme.dSYM
+*.dSYM
 scheme
