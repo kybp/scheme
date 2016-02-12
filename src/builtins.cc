@@ -104,6 +104,17 @@ SchemeExpr nullp(const SchemeArgs& args)
     }
 }
 
+SchemeExpr length(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "length requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return static_cast<int>(vectorFromExpr(args.front()).size());
+    }
+}
+
 SchemeExpr lesser(const SchemeArgs& args)
 {
     if (args.size() < 2) {
@@ -209,6 +220,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "cons", scheme::cons);
     addPrimitive(names, functions, "cons?", scheme::consp);
     addPrimitive(names, functions, "eq?", scheme::eq);
+    addPrimitive(names, functions, "length", scheme::length);
     addPrimitive(names, functions, "not", scheme::_not);
     addPrimitive(names, functions, "null?", scheme::nullp);
 

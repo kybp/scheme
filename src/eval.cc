@@ -52,10 +52,25 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
 {
     auto procArgs = vectorFromExpr(args[0]);
     std::vector<std::string> params;
-    std::transform(procArgs.begin(), procArgs.end(), back_inserter(params),
-                   stringValue);
+    bool hasRestParam = false;
+
+
+    for (std::size_t i = 0; i < procArgs.size(); ++i) {
+        std::ostringstream string;
+        string << procArgs[i];
+        if (string.str() != ".") {
+            params.push_back(stringValue(procArgs[i]));
+        } else if (i == args.size() - 2) { // only one rest parameter
+            hasRestParam = true;
+            params.push_back(stringValue(procArgs[i + 1]));
+            break;
+        } else {
+            throw scheme_error("Illegal rest parameter in lambda list");
+        }
+    }
+
     return std::make_shared<LexicalFunction>(
-        LexicalFunction(params, args[1], env));
+        LexicalFunction(params, args[1], hasRestParam, env));
 }
 
 SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const

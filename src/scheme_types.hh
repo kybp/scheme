@@ -30,6 +30,8 @@ public:
         { return what_.c_str(); }
 };
 
+SchemeCons consFromVector(const std::vector<SchemeExpr>& vector);
+
 class SchemeEnvironment
     : public std::enable_shared_from_this<SchemeEnvironment> {
     std::map<std::string, SchemeExpr> definitions;
@@ -39,16 +41,38 @@ public:
 
     SchemeEnvironment(const std::vector<std::string>& params,
                       const std::vector<SchemeExpr>& args)
-        : SchemeEnvironment(params, args, nullptr)
+        : SchemeEnvironment(params, args, false)
     {}
 
     SchemeEnvironment(const std::vector<std::string>& params,
                       const std::vector<SchemeExpr>& args,
+                      bool hasRestParam)
+        : SchemeEnvironment(params, args, hasRestParam, nullptr)
+    {}
+
+    SchemeEnvironment(const std::vector<std::string>& params,
+                      const std::vector<SchemeExpr>& args,
+                      bool hasRestParam,
                       std::shared_ptr<SchemeEnvironment> outer)
         : outer(outer)
     {
-        for (std::size_t i = 0; i < args.size(); ++i) {
+        if (!hasRestParam && params.size() != args.size()) {
+            std::ostringstream error;
+            error << "Function expected " << params.size() << " arguments, ";
+            error << "passed " << args.size();
+            throw scheme_error(error);
+        }
+        
+        for (std::size_t i = 0; i < params.size(); ++i) {
             definitions[params[i]] = args[i];
+        }
+
+        if (hasRestParam) {
+            std::vector<SchemeExpr> rest;
+            std::copy(args.begin() + params.size() - 1, args.end(),
+                      back_inserter(rest));
+            definitions[params[params.size() - 1]] =
+                consFromVector(rest);
         }
     }
 

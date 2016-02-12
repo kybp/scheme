@@ -31,16 +31,17 @@ public:
 class LexicalFunction : public SchemeFunction {
     std::vector<std::string> params;
     SchemeExpr body;
+    bool hasRestParam;
     std::shared_ptr<SchemeEnvironment> env;
 public:
     LexicalFunction(std::vector<std::string> params, SchemeExpr body,
-                    std::shared_ptr<SchemeEnvironment> env)
-        : params(params), body(body), env(env)
+                    bool hasRestParam, std::shared_ptr<SchemeEnvironment> env)
+        : params(params), body(body), hasRestParam(hasRestParam), env(env)
     {}
 
     virtual SchemeExpr operator()(const SchemeArgs& args) override {
         auto execEnv = std::make_shared<SchemeEnvironment>(
-            SchemeEnvironment(params, args, env));
+            SchemeEnvironment(params, args, hasRestParam, env));
         return eval(body, execEnv);
     }
 };

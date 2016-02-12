@@ -70,6 +70,12 @@ TEST(LambdaTest, DefineConstantFunction) {
     ASSERT_EQ(3, intValue(eval(parse("(three)"), env)));
 }
 
+TEST(LambdaTest, RestParameter) {
+    auto env = standardEnvironment();
+    eval(parse("(define num-args (lambda (. rest) (length rest)))"), env);
+    ASSERT_EQ(3, intValue(eval(parse("(num-args 1 2 3)"), env)));
+}
+
 TEST(OrTest, NoArgsIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(or)"))));
 }

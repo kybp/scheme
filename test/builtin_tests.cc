@@ -216,6 +216,32 @@ TEST(EqTests, UnequalSymbolsIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(eq? (quote foo) (quote bar))"))));
 }
 
+// length tests
+
+TEST(LengthTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(length)")), scheme_error);
+}
+
+TEST(LengthTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(length (quote ()) (quote ()))")), scheme_error);
+}
+
+TEST(LengthTests, EmptyListIsZeroLength) {
+    ASSERT_EQ(0, intValue(eval(parse("(length (quote ()))"))));
+}
+
+TEST(LengthTests, ThreeElementListIsThree) {
+    ASSERT_EQ(3, intValue(eval(parse("(length (quote (1 2 3)))"))));
+}
+
+TEST(LengthTests, NonListArgThrows) {
+    ASSERT_THROW(eval(parse("(length #t)")), scheme_error);
+}
+
+TEST(LengthTests, ImproperListArgThrows) {
+    ASSERT_THROW(eval(parse("(length (cons 1 2))")), scheme_error);
+}
+
 // not
 
 TEST(NotTests, NoArgsThrows) {
