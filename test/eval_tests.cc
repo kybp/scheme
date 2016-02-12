@@ -72,19 +72,19 @@ TEST(LambdaTest, DefineConstantFunction) {
 
 TEST(LambdaTest, RestParameter) {
     auto env = standardEnvironment();
-    eval(parse("(define num-args (lambda (. rest) (length rest)))"), env);
+    eval(parse("(define num-args (lambda (&rest rest) (length rest)))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(num-args 1 2 3)"), env)));
 }
 
 TEST(LambdaTest, EmptyRestParameter) {
     auto env = standardEnvironment();
-    eval(parse("(define f (lambda (. args) (length args)))"), env);
+    eval(parse("(define f (lambda (&rest args) (length args)))"), env);
     ASSERT_EQ(0, intValue(eval(parse("(f)"), env)));
 }
 
 TEST(LambdaTest, RestParameterWithRequiredParameters) {
     auto env = standardEnvironment();
-    eval(parse("(define f (lambda (x . args) (cons x args)))"), env);
+    eval(parse("(define f (lambda (x &rest args) (cons x args)))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(length (f 1 2 3))"), env)));
     ASSERT_THROW(eval(parse("(f)"), env), scheme_error);
 }

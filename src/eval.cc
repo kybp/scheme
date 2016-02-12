@@ -58,7 +58,7 @@ SchemeExpr evalVisitor::evalLambda(const SchemeArgs& args, envPointer env) const
     for (std::size_t i = 0; i < procArgs.size(); ++i) {
         std::ostringstream string;
         string << procArgs[i];
-        if (string.str() != ".") {
+        if (string.str() != "&rest") {
             params.push_back(stringValue(procArgs[i]));
         } else if (i == procArgs.size() - 2) { // only one rest parameter
             hasRestParam = true;
