@@ -148,3 +148,12 @@ TEST(CharacterTest, UndefinedSymbolicNameThrows) {
 TEST(CharacterTest, CharacterInLargerExpression) {
     ASSERT_NO_THROW(parse("(quote #\\a)"));
 }
+
+TEST(CommentTest, IgnoreComments) {
+    ASSERT_NO_THROW(parse("1;)"));
+    ASSERT_THROW(parse("(;)"), scheme_error);
+}
+
+TEST(CommentTest, NextLineNotComment) {
+    ASSERT_NO_THROW(parse("(;)))\n)"));
+}

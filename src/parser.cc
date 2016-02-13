@@ -25,6 +25,14 @@ std::istream& readToken(std::istream& in, std::string& out)
                 token << "#\\";
             } else in.putback(c);
             break;
+        } else if (c == ';') {
+            if (token.str().empty()) {
+                while (in >> c && c != '\n')
+                    ;
+            } else {
+                in.putback(c);
+                break;
+            }
         } else if (std::isspace(c)) {
             if (!token.str().empty()) break;
             // else continue reading

@@ -7,7 +7,12 @@ Simple C++11 Scheme interpreter based off Peter Norvig's
 
 Requires Boost
 
-## Types and operations
+## Language Description
+
+### Comments
+
+Anything from a ; to the end of the line is ignored, unless part of a
+string literal or as a character literal (ie, #\;).
 
 ### Special operators
 
