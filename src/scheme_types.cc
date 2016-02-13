@@ -34,8 +34,7 @@ SchemeEnvironment::SchemeEnvironment(
 
     if (hasRestParam) {
         std::vector<SchemeExpr> rest;
-        std::copy(args.begin() + params.size() - 1, args.end(),
-                  back_inserter(rest));
+        rest.assign(args.begin() + params.size() - 1, args.end());
         if (rest.empty()) {
             definitions[params[params.size() - 1].string] = Nil::Nil;
         } else {
