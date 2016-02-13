@@ -77,22 +77,6 @@ SchemeExpr cons(const SchemeArgs& args) {
     }
 }
 
-SchemeExpr consp(const SchemeArgs& args)
-{
-    if (args.size() != 1) {
-        std::ostringstream error;
-        error << "cons? requires one argument, passed " << args.size();
-        throw scheme_error(error);
-    } else {
-        try {
-            consValue(args.front());
-            return true;
-        } catch (const scheme_error&) {
-            return false;
-        }
-    }
-}
-
 SchemeExpr nullp(const SchemeArgs& args)
 {
     if (args.size() != 1) {
@@ -255,6 +239,70 @@ SchemeExpr newline(const SchemeArgs& args)
     }
 }
 
+SchemeExpr consp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "cons? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            consValue(args.front());
+            return true;
+        } catch (const scheme_error&) {
+            return false;
+        }
+    }
+}
+
+SchemeExpr numberp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "number? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            intValue(args.front());
+            return true;
+        } catch (const scheme_error&) {
+            return false;
+        }
+    }
+}
+
+SchemeExpr stringp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "string? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            stringValue(args.front());
+            return true;
+        } catch (const scheme_error&) {
+            return false;
+        }
+    }
+}
+
+SchemeExpr symbolp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "symbol? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            symbolValue(args.front());
+            return true;
+        } catch (const scheme_error&) {
+            return false;
+        }
+    }
+}
+
 } // end namespace
 
 SchemeExpr eval(const SchemeExpr& e)
@@ -295,8 +343,11 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "newline", scheme::newline);
     addPrimitive(names, functions, "not", scheme::_not);
     addPrimitive(names, functions, "null?", scheme::nullp);
+    addPrimitive(names, functions, "number?", scheme::numberp);
+    addPrimitive(names, functions, "string?", scheme::stringp);
     addPrimitive(names, functions, "string-length", scheme::stringLength);
     addPrimitive(names, functions, "string-ref", scheme::stringRef);
+    addPrimitive(names, functions, "symbol?", scheme::symbolp);
 
     return std::make_shared<SchemeEnvironment>(
         SchemeEnvironment(names, functions));

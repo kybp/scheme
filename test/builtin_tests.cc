@@ -368,3 +368,80 @@ TEST(StringRefTests, NonIntegerSecondArgThrows) {
 TEST(StringRefTests, ValidIndexGetsCharacter) {
     ASSERT_EQ('u', charValue(eval(parse("(string-ref \"um\" 0)"))));
 }
+
+TEST(ConspTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(cons?)")), scheme_error);
+}
+
+TEST(ConspTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(cons? (cons 1 2) (cons 3 4))")), scheme_error);
+}
+
+TEST(ConspTests, ConsIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(cons? (cons 1 2))"))));
+}
+
+TEST(ConspTests, NonConsIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(cons? (quote ()))"))));
+    ASSERT_FALSE(boolValue(eval(parse("(cons? #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(cons? 1)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(cons? \"um\")"))));
+}
+
+TEST(StringpTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(string?)")), scheme_error);
+}
+
+TEST(StringpTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(string? \"um\" \"hi\")")), scheme_error);
+}
+
+TEST(StringpTests, StringIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(string? \"um\")"))));
+}
+
+TEST(StringpTests, NonStringIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(string? #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(string? 1)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(string? #\\a)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(string? (cons 1 2))"))));
+}
+
+TEST(NumberpTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(number?)")), scheme_error);
+}
+
+TEST(NumberpTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(number? 1 2)")), scheme_error);
+}
+
+TEST(NumberpTests, NumberIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(number? 1)"))));
+}
+
+TEST(NumberpTests, NonNumberIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(number? #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(number? \"um\")"))));
+    ASSERT_FALSE(boolValue(eval(parse("(number? #\\a)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(number? (cons 1 2))"))));
+}
+
+TEST(SymbolpTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(symbol?)")), scheme_error);
+}
+
+TEST(SymbolpTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(symbol? (quote a) (quote b))")), scheme_error);
+}
+
+TEST(SymbolpTests, SymbolIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(symbol? (quote foo))"))));
+}
+
+TEST(SymbolpTests, NonSymbolIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(symbol? #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(symbol? \"um\")"))));
+    ASSERT_FALSE(boolValue(eval(parse("(symbol? #\\a)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(symbol? (cons 1 2))"))));
+    ASSERT_FALSE(boolValue(eval(parse("(symbol? (quote ()))"))));
+}

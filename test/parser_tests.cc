@@ -105,8 +105,8 @@ TEST(StringTest, EmbeddedNewline) {
     ASSERT_EQ("um\nhi", stringValue(parse("\"um\nhi\"")));
 }
 
-TEST(StringTest, MultipleStringsInAList) {
-    ASSERT_NO_THROW(parse("(quote \"um\" \"hi\")"));
+TEST(StringTest, StringInLargerExpression) {
+    ASSERT_NO_THROW(parse("(quote \"um\")"));
 }
 
 TEST(StringTest, BackslashEscapesDelimiter) {
@@ -143,4 +143,8 @@ TEST(CharacterTest, TabSymbolicName) {
 
 TEST(CharacterTest, UndefinedSymbolicNameThrows) {
     ASSERT_THROW(parse("#\\um"), scheme_error);
+}
+
+TEST(CharacterTest, CharacterInLargerExpression) {
+    ASSERT_NO_THROW(parse("(quote #\\a)"));
 }

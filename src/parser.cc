@@ -143,6 +143,10 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
             if (element == "(" || element == "\"") {
                 in.putback(element[0]);
                 readSchemeExpr(in, expr);
+            } else if (element == "#\\") {
+                char c;
+                if (readChar(in, c)) expr = c;
+                else throw scheme_error("Unexpected EOF in character literal");
             } else {
                 readSchemeExpr(element, expr);
             }
