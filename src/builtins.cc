@@ -239,6 +239,22 @@ SchemeExpr newline(const SchemeArgs& args)
     }
 }
 
+SchemeExpr characterp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "character? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            charValue(args.front());
+            return true;
+        } catch (const scheme_error&) {
+            return false;
+        }
+    }
+}
+
 SchemeExpr consp(const SchemeArgs& args)
 {
     if (args.size() != 1) {
@@ -333,6 +349,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "=", scheme::equal);
     addPrimitive(names, functions, "abs", scheme::abs);
     addPrimitive(names, functions, "car", scheme::car);
+    addPrimitive(names, functions, "character?", scheme::characterp);
     addPrimitive(names, functions, "cdr", scheme::cdr);
     addPrimitive(names, functions, "cons", scheme::cons);
     addPrimitive(names, functions, "cons?", scheme::consp);

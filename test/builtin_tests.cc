@@ -445,3 +445,22 @@ TEST(SymbolpTests, NonSymbolIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(symbol? (cons 1 2))"))));
     ASSERT_FALSE(boolValue(eval(parse("(symbol? (quote ()))"))));
 }
+
+TEST(CharacterpTests, NoArgsThrows) {
+    ASSERT_THROW(eval(parse("(character?)")), scheme_error);
+}
+
+TEST(CharacterpTests, MoreThanOneArgThrows) {
+    ASSERT_THROW(eval(parse("(character? #\\a #\\b)")), scheme_error);
+}
+
+TEST(CharacterpTests, CharacterIsTrue) {
+    ASSERT_TRUE(boolValue(eval(parse("(character? #\\a)"))));
+}
+
+TEST(CharacterpTests, NonCharacterIsFalse) {
+    ASSERT_FALSE(boolValue(eval(parse("(character? #t)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(character? \"um\")"))));
+    ASSERT_FALSE(boolValue(eval(parse("(character? (cons 1 2))"))));
+    ASSERT_FALSE(boolValue(eval(parse("(character? (quote ()))"))));
+}
