@@ -16,7 +16,7 @@ SchemeExpr abs(const SchemeArgs& args)
 
 SchemeExpr add(const SchemeArgs& args)
 {
-    std::vector<int> ints;
+    std::vector<int> ints(args.size());
     std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
     return std::accumulate(ints.begin(), ints.end(), 0);
 }
@@ -28,21 +28,19 @@ SchemeExpr sub(const SchemeArgs& args)
     } else if (args.size() == 1) {
         return -intValue(args.front());
     } else {
-        auto minus = [](int x, int y) { return x - y; };
-        std::vector<int> ints;
-        std::transform(args.begin(), args.end(), back_inserter(ints),
-                       intValue);
-        return std::accumulate(ints.begin() + 1, ints.end(),
-                               ints.front(), minus);
+        std::vector<int> ints(args.size());
+        std::transform(args.begin(), args.end(), ints.begin(), intValue);
+        return std::accumulate(ints.begin() + 1, ints.end(), ints.front(),
+                               std::minus<int>());
     }
 }
 
 SchemeExpr mul(const SchemeArgs& args)
 {
-    auto mul = [](int x, int y) { return x * y; };
-    std::vector<int> ints;
-    std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
-    return std::accumulate(ints.begin(), ints.end(), 1, mul);
+    std::vector<int> ints(args.size());
+    std::transform(args.begin(), args.end(), ints.begin(), intValue);
+    return std::accumulate(ints.begin(), ints.end(), 1,
+                           std::multiplies<int>());
 }
 
 SchemeExpr car(const SchemeArgs& args)
@@ -106,9 +104,8 @@ SchemeExpr lesser(const SchemeArgs& args)
         error << "< requires at least two arguments, passed " << args.size();
         throw scheme_error(error);
     } else {
-        std::vector<int> ints;
-        std::transform(args.begin(), args.end(), back_inserter(ints),
-                       intValue);
+        std::vector<int> ints(args.size());
+        std::transform(args.begin(), args.end(), ints.begin(), intValue);
         return std::adjacent_find(ints.begin(), ints.end(),
                                   std::greater_equal<int>()) == ints.end();
     }
@@ -121,9 +118,8 @@ SchemeExpr equal(const SchemeArgs& args)
         error << "= requires at least two arguments, passed " << args.size();
         throw scheme_error(error);
     } else {
-        std::vector<int> ints;
-        std::transform(args.begin(), args.end(), back_inserter(ints),
-                       intValue);
+        std::vector<int> ints(args.size());
+        std::transform(args.begin(), args.end(), ints.begin(), intValue);
         return std::adjacent_find(ints.begin(), ints.end(),
                                   std::not_equal_to<int>()) == ints.end();
     }
@@ -136,9 +132,8 @@ SchemeExpr greater(const SchemeArgs& args)
         error << "> requires at least two arguments, passed " << args.size();
         throw scheme_error(error);
     } else {
-        std::vector<int> ints;
-        std::transform(args.begin(), args.end(), back_inserter(ints),
-                       intValue);
+        std::vector<int> ints(args.size());
+        std::transform(args.begin(), args.end(), ints.begin(), intValue);
         return std::adjacent_find(ints.begin(), ints.end(),
                                   std::less_equal<int>()) == ints.end();
     }
