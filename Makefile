@@ -18,7 +18,7 @@ builtins.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/builtins.hh\
 	    $(SRC_DIR)/eval.hh $(SRC_DIR)/builtins.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/builtins.cc
 
-# start of gtest stuffa
+# start of gtest stuff
 
 GTEST_DIR = $(TEST_DIR)/googletest
 CPPFLAGS += -isystem $(GTEST_DIR)/include
