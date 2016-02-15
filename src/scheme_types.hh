@@ -45,6 +45,7 @@ public:
 
 SchemeCons consFromVector(const std::vector<SchemeExpr>& vector);
 std::vector<SchemeExpr> vectorFromCons(SchemeCons cons);
+SchemeExpr append(const SchemeExpr& x, SchemeExpr y);
 
 class SchemeEnvironment
     : public std::enable_shared_from_this<SchemeEnvironment> {

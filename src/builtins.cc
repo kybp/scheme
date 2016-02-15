@@ -64,7 +64,8 @@ SchemeExpr cdr(const SchemeArgs& args)
     }
 }
 
-SchemeExpr cons(const SchemeArgs& args) {
+SchemeExpr cons(const SchemeArgs& args)
+{
     if (args.size() != 2) {
         std::ostringstream error;
         error << "cons requires two arguments, passed " << args.size();
@@ -74,15 +75,11 @@ SchemeExpr cons(const SchemeArgs& args) {
     }
 }
 
-SchemeExpr nullp(const SchemeArgs& args)
+SchemeExpr append(const SchemeArgs& args)
 {
-    if (args.size() != 1) {
-        std::ostringstream error;
-        error << "null? requires one argument, passed " << args.size();
-        throw scheme_error(error);
-    } else {
-        return SchemeExpr(Nil::Nil) == args.front();
-    }
+    if (args.empty()) return Nil::Nil;
+    else return std::accumulate(args.begin(), args.end(),
+                                SchemeExpr(Nil::Nil), ::append);
 }
 
 SchemeExpr length(const SchemeArgs& args)
@@ -265,6 +262,17 @@ SchemeExpr consp(const SchemeArgs& args)
     }
 }
 
+SchemeExpr nullp(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "null? requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        return SchemeExpr(Nil::Nil) == args.front();
+    }
+}
+
 SchemeExpr numberp(const SchemeArgs& args)
 {
     if (args.size() != 1) {
@@ -342,6 +350,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, ">", scheme::greater);
     addPrimitive(names, functions, "=", scheme::equal);
     addPrimitive(names, functions, "abs", scheme::abs);
+    addPrimitive(names, functions, "append", scheme::append);
     addPrimitive(names, functions, "car", scheme::car);
     addPrimitive(names, functions, "character?", scheme::characterp);
     addPrimitive(names, functions, "cdr", scheme::cdr);

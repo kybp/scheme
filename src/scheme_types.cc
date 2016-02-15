@@ -71,3 +71,12 @@ SchemeCons consFromVector(const std::vector<SchemeExpr>& vector) {
 
     return cons;
 }
+
+SchemeExpr append(const SchemeExpr& x, SchemeExpr y)
+{
+    auto xVec = vectorFromExpr(x);
+    for (auto it = xVec.crbegin(); it != xVec.rend(); ++it) {
+        y = SchemeCons(*it, y);
+    }
+    return y;
+}

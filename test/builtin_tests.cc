@@ -116,6 +116,35 @@ TEST(AbsTests, NegativeInput) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
 }
 
+// append
+
+TEST(AppendTests, NoArgsReturnsEmptyList) {
+    ASSERT_EQ(parse("()"), eval(parse("(append)")));
+}
+
+TEST(AppendTests, AppendsTwoLists) {
+    ASSERT_EQ(parse("(1 2 3 4)"),
+              eval(parse("(append (quote (1 2)) (quote (3 4)))")));
+}
+
+TEST(AppendTests, AppendOneAtom) {
+    ASSERT_EQ(1, intValue(eval(parse("(append 1)"))));
+}
+
+TEST(AppendTests, CannotAppendAtomToCons) {
+    ASSERT_THROW(eval(parse("(append 1 (quote ()))")), scheme_error);
+}
+
+TEST(AppendTests, CannotAppendImproperListToList) {
+    ASSERT_THROW(eval(parse("(append (cons 1 2) (quote ()))")), scheme_error);
+}
+
+TEST(AppendTests, AppendProperListToImproperList) {
+    ASSERT_NO_THROW(eval(parse("(append (quote (1)) (cons 2 3))")));
+    ASSERT_EQ(3, intValue(
+                  eval(parse("(cdr (cdr (append (quote (1)) (cons 2 3)))))"))));
+}
+
 // car
 
 TEST(CarTests, CarOfNilThrows) {
