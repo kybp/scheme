@@ -145,6 +145,11 @@ TEST(AppendTests, AppendProperListToImproperList) {
                   eval(parse("(cdr (cdr (append (quote (1)) (cons 2 3)))))"))));
 }
 
+TEST(AppendTests, AppendMultipleLists) {
+    auto program = "(append (quote (1)) (quote (2)) (quote (3)))";
+    ASSERT_EQ(parse("(1 2 3)"), eval(parse(program)));
+}
+
 // car
 
 TEST(CarTests, CarOfNilThrows) {
