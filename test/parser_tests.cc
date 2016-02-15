@@ -157,3 +157,28 @@ TEST(CommentTest, IgnoreComments) {
 TEST(CommentTest, NextLineNotComment) {
     ASSERT_NO_THROW(parse("(;)))\n)"));
 }
+
+TEST(QuoteReadMacro, ProducesQuoteForm) {
+    ASSERT_EQ(parse("(quote foo)"), parse("'foo"));
+}
+
+TEST(QuasiquoteReadMacro, ProducesQuasiquoteForm) {
+    ASSERT_EQ(parse("(quasiquote foo)"), parse("`foo"));
+}
+
+TEST(UnquoteReadMacro, ProducesUnquoteForm) {
+    ASSERT_EQ(parse("(unquote foo)"), parse(",foo"));
+}
+
+TEST(UnquoteReadMacro, WorksInQuasiquote) {
+    ASSERT_EQ(parse("(quasiquote (unquote foo))"), parse("`,foo"));
+}
+
+TEST(UnquoteReadMacro, WorksInSubform) {
+    ASSERT_EQ(parse("(quasiquote (1 2 (unquote (+ 1 2))))"),
+              parse("`(1 2 ,(+ 1 2))"));
+}
+
+TEST(UnquoteSplicingReadMacro, ProducesUnquoteSplicingForm) {
+    ASSERT_EQ(parse("(unquote-splicing foo)"), parse(",@foo"));
+}

@@ -1,6 +1,5 @@
 #include <algorithm> // for std::transform, std::all_of
 #include <cctype>    // for std::isdigit
-#include <deque>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -15,9 +14,18 @@ std::istream& readToken(std::istream& in, std::string& out)
     char c;
 
     while (in >> c) {
-        if (c == '(' || c == ')' || c == '"') {
+        if (c == '(' || c == ')' || c == '"' || c == '\'' || c == '`') {
             if (token.str().empty()) token << c;
             else in.putback(c);
+            break;
+        } else if (c == ',') {
+            if (token.str().empty()) {
+                token << ",";
+                if (in.peek() == '@') {
+                    in >> c;
+                    token << c;
+                }
+            } else in.putback(c);
             break;
         } else if (c == '#' && in.peek() == '\\') {
             if (token.str().empty()) {
@@ -134,6 +142,21 @@ std::istream& readUntil(std::istream& in, char delimiter, std::string& out)
     return in;
 }
 
+std::istream& readMacroQuoteForm(std::istream& in, const std::string& token,
+                                 SchemeExpr& out)
+{
+    SchemeExpr expr;
+    if (readSchemeExpr(in, expr)) {
+        SchemeExpr sym;
+        if (token == "'")       sym = SchemeSymbol("quote");
+        else if (token == "`")  sym = SchemeSymbol("quasiquote");
+        else if (token == ",")  sym = SchemeSymbol("unquote");
+        else if (token == ",@") sym = SchemeSymbol("unquote-splicing");
+        out = consFromVector(std::vector<SchemeExpr>{ sym, expr });
+    }
+    return in;
+}
+
 std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 {
     std::string token;
@@ -151,6 +174,10 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
             if (element == "(" || element == "\"") {
                 in.putback(element[0]);
                 readSchemeExpr(in, expr);
+            } else if (element == "'" || element == "`" ||
+                       element == "," || element == ",@") {
+                if (!readMacroQuoteForm(in, element, expr))
+                    throw scheme_error("Unexpected EOF in (quasi)quote");
             } else if (element == "#\\") {
                 char c;
                 if (readChar(in, c)) expr = c;
@@ -162,6 +189,9 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
         }
 
         out = listVec.empty() ? SchemeExpr(Nil::Nil) : consFromVector(listVec);
+    } else if (token == "'" || token == "`" || token == "," || token == ",@") {
+        if (!readMacroQuoteForm(in, token, out))
+            throw scheme_error("Unexpected EOF in (quasi)quote");
     } else if (token == ")") {
         throw scheme_error("Unexpected ')'");
     } else if (token == "#\\") {

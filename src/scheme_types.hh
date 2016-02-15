@@ -16,6 +16,8 @@ enum class Nil { Nil };
 struct SchemeSymbol {
     std::string string;
 
+    SchemeSymbol(const std::string& string): string(string) {}
+
     bool operator==(const SchemeSymbol& rhs) const {
         return rhs.string == string;
     }
