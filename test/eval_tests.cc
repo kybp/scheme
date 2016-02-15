@@ -155,3 +155,16 @@ TEST(BeginTest, NoArgsThrows) {
 TEST(BeginTest, ReturnsLastExpression) {
     ASSERT_EQ(3, intValue(eval(parse("(begin 1 2 3)"))));
 }
+
+TEST(QuasiquoteTest, NoUnquoteJustQuotes) {
+    ASSERT_EQ("foo", symbolValue(eval(parse("(quasiquote foo)"))).string);
+}
+
+TEST(QuasiquoteTest, UnquoteExpr) {
+    ASSERT_EQ(3, intValue(eval(parse("(quasiquote (unquote (+ 1 2)))"))));
+}
+
+TEST(QuasiquoteTest, UnquoteSubexpr) {
+    ASSERT_EQ(6, intValue(
+                  eval(eval(parse("(quasiquote (+ (unquote (+ 1 2)) 3))")))));
+}

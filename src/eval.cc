@@ -101,6 +101,42 @@ SchemeExpr evalVisitor::evalOr(const SchemeArgs& args, envPointer env) const
     return false;
 }
 
+SchemeExpr
+evalVisitor::evalQuasiquote(const SchemeArgs& args, envPointer env) const
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "quasiquote requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        try {
+            auto cons = consValue(args.front());
+            std::ostringstream carStrStream;
+            carStrStream << cons.first;
+            std::string carStr = carStrStream.str();
+            if (carStr == "unquote-splicing") {
+                throw scheme_error("Invalid splice in quasiquote");
+            } else if (carStr == "unquote") {
+                auto consVec = vectorFromCons(cons);
+                if (consVec.size() != 2) {
+                    std::ostringstream error;
+                    error << "Unquote requires one argument, passed ";
+                    error << args.size();
+                    throw scheme_error(error);
+                } else {
+                    return eval(consVec[1], env);
+                }
+            } else {
+                auto car = evalQuasiquote({cons.first}, env);
+                auto cdr = evalQuasiquote({cons.second}, env);
+                return SchemeCons(car, cdr);
+            }
+        } catch (const scheme_error&) {
+            return args.front();
+        }
+    }
+}
+
 SchemeExpr evalVisitor::evalQuote(const SchemeArgs& args) const
 {
     if (args.size() != 1) {

@@ -59,6 +59,7 @@ class evalVisitor : public boost::static_visitor<SchemeExpr> {
     SchemeExpr evalOr(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalSet(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalSymbol(const SchemeSymbol& symbol, envPointer env) const;
+    SchemeExpr evalQuasiquote(const SchemeArgs& args, envPointer env) const;
     SchemeExpr evalQuote(const SchemeArgs& args) const;
 public:
     evalVisitor(std::shared_ptr<SchemeEnvironment> env) : env(env) {}
@@ -96,15 +97,18 @@ public:
         carStream << car(cons);
         std::string carStr = carStream.str();
         SchemeArgs args = vectorFromExpr(cdr(cons));
-             if (carStr == "and")    return evalAnd(args, env);
-        else if (carStr == "begin")  return evalBegin(args, env);
-        else if (carStr == "if")     return evalIf(args, env);
-        else if (carStr == "define") return evalDefine(args, env);
-        else if (carStr == "lambda") return evalLambda(args, env);
-        else if (carStr == "quote")  return evalQuote(args);
-        else if (carStr == "or")     return evalOr(args, env);
-        else if (carStr == "set!")   return evalSet(args, env);
-        else {
+             if (carStr == "and")        return evalAnd(args, env);
+        else if (carStr == "begin")      return evalBegin(args, env);
+        else if (carStr == "if")         return evalIf(args, env);
+        else if (carStr == "define")     return evalDefine(args, env);
+        else if (carStr == "lambda")     return evalLambda(args, env);
+        else if (carStr == "quasiquote") return evalQuasiquote(args, env);
+        else if (carStr == "quote")      return evalQuote(args);
+        else if (carStr == "or")         return evalOr(args, env);
+        else if (carStr == "set!")       return evalSet(args, env);
+        else if (carStr == "unquote") {
+            throw scheme_error("Unquote outside of quasiquote");
+        } else {
             SchemeExpr op = eval(car(cons), env);
             return evalFuncall(op, args, env);
         }
