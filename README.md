@@ -42,7 +42,18 @@ string literal or as a character literal (ie, #\;).
   stopping at the first #f value. If no argument evaluates to #f, it
   returns the last argument it evaluated. (and) evaluates to #t.
 
-* quote takes one argument and returns it unevaluated.
+* quote takes one argument and returns it unevaluated. 'foo is
+  equivalent to (quote foo).
+
+* quasiquote works like quote, but allows for use of unquote and
+  unquote-splicing. unquote evaluates a single form inside of a
+  quasiquote expression. unquote-splicing evaluates a form which must
+  produce a list, and splices it into the surrounding list. In the
+  same way quote can be written with ', quasiquote can be written with
+  `, unquote can be written with a comma, and unquote-splicing can be
+  written with ,@. (quasiquote (1 2 (unquote (+ 1 2))
+  (unquote-splicing (cons 4 (quote ()))))) is equivalent to `(1 2 ,(+
+  1 2) ,@(cons 4 '())), and both evaluate to (1 2 3 4).
 
 ### General Functions
 
@@ -83,6 +94,10 @@ cons's cdr is either a cons or the empty list, the cons is a proper
 list. The empty list, written (), is not a cons, but serves to mark
 the end of a chain of conses representing a list.
 
+* append takes any number of arguments and builds a new list by
+  combining them. (append) => (), (append '(1 2) '(3 4)) => (1 2 3 4),
+  (append '(1 2) (cons 3 4)) => (1 2 3 . 4). Every argument but the
+  last must be a proper list.
 * car returns the car of a cons
 * cdr returns the cdr of a cons
 * cons takes two arguments, the first representing the car and the
