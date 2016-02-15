@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cstdlib>   // for std::abs
-#include <iterator>  // for std::back_inserter
 #include <numeric>   // for std::accumulate
 #include <boost/variant.hpp>
 #include "builtins.hh"
@@ -17,7 +16,7 @@ SchemeExpr abs(const SchemeArgs& args)
 SchemeExpr add(const SchemeArgs& args)
 {
     std::vector<int> ints(args.size());
-    std::transform(args.begin(), args.end(), back_inserter(ints), intValue);
+    std::transform(args.begin(), args.end(), ints.begin(), intValue);
     return std::accumulate(ints.begin(), ints.end(), 0);
 }
 
