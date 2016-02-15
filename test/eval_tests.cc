@@ -168,3 +168,19 @@ TEST(QuasiquoteTest, UnquoteSubexpr) {
     ASSERT_EQ(6, intValue(
                   eval(eval(parse("(quasiquote (+ (unquote (+ 1 2)) 3))")))));
 }
+
+TEST(QuasiquoteTest, InvalidUnquoteSplicingThrows) {
+    ASSERT_THROW(eval(parse("(quasiquote (unquote-splicing (quote ())))")),
+                 scheme_error);
+}
+
+TEST(QuasiquoteTest, UnquoteSplicingNonListThrows) {
+    ASSERT_THROW(eval(parse("(quasiquote (cons 1 (unquote-splicing 2)))")),
+                 scheme_error);
+}
+
+TEST(QuasiquoteTest, UnquoteSplicingSplices) {
+    ASSERT_EQ(parse("(1 2 3)"),
+              eval(parse("(quasiquote (1 2 (unquote-splicing\
+                                             (cons 3 (quote ())))))")));
+}

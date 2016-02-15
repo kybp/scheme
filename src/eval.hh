@@ -107,7 +107,9 @@ public:
         else if (carStr == "or")         return evalOr(args, env);
         else if (carStr == "set!")       return evalSet(args, env);
         else if (carStr == "unquote") {
-            throw scheme_error("Unquote outside of quasiquote");
+            throw scheme_error("unquote outside of quasiquote");
+        } else if (carStr == "unquote-splicing") {
+            throw scheme_error ("unquote-splicing outside of quasiquote");
         } else {
             SchemeExpr op = eval(car(cons), env);
             return evalFuncall(op, args, env);

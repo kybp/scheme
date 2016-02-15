@@ -109,30 +109,39 @@ evalVisitor::evalQuasiquote(const SchemeArgs& args, envPointer env) const
         error << "quasiquote requires one argument, passed " << args.size();
         throw scheme_error(error);
     } else {
-        try {
-            auto cons = consValue(args.front());
-            std::ostringstream carStrStream;
-            carStrStream << cons.first;
-            std::string carStr = carStrStream.str();
-            if (carStr == "unquote-splicing") {
-                throw scheme_error("Invalid splice in quasiquote");
-            } else if (carStr == "unquote") {
-                auto consVec = vectorFromCons(cons);
-                if (consVec.size() != 2) {
-                    std::ostringstream error;
-                    error << "Unquote requires one argument, passed ";
-                    error << args.size();
-                    throw scheme_error(error);
-                } else {
-                    return eval(consVec[1], env);
-                }
+        SchemeCons cons;
+        try { cons = consValue(args.front()); }
+        catch (const scheme_error&) { return args.front(); }
+            
+        std::ostringstream carStrStream;
+        carStrStream << cons.first;
+        std::string carStr = carStrStream.str();
+        if (carStr == "unquote-splicing") {
+            throw scheme_error("Invalid splice in quasiquote");
+        } else if (carStr == "unquote") {
+            auto consVec = vectorFromCons(cons);
+            if (consVec.size() != 2) {
+                std::ostringstream error;
+                error << "Unquote requires one argument, passed ";
+                error << args.size();
+                throw scheme_error(error);
             } else {
-                auto car = evalQuasiquote({cons.first}, env);
-                auto cdr = evalQuasiquote({cons.second}, env);
-                return SchemeCons(car, cdr);
+                return eval(consVec[1], env);
             }
-        } catch (const scheme_error&) {
-            return args.front();
+        } else {
+            try {
+                auto subCons = consValue(car(cons));
+                std::ostringstream subCar;
+                subCar << car(subCons);
+                if (subCar.str() == "unquote-splicing") {
+                    return append(eval(car(consValue(cdr(subCons))), env),
+                                  evalQuasiquote({cdr(cons)}, env));
+                }
+            } catch (const scheme_error&) {
+            } // not unquote-splicing, so treat it like normal
+            auto carVal = evalQuasiquote({car(cons)}, env);
+            auto cdrVal = evalQuasiquote({cdr(cons)}, env);
+            return SchemeCons(carVal, cdrVal);
         }
     }
 }
