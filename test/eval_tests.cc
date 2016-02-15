@@ -3,144 +3,143 @@
 #include "eval.hh"
 #include "scheme_types.hh"
 
-TEST(EvalTest, EvalSelfEvaluating) {
+TEST(Eval, EvaluatesNumberToItself) {
     ASSERT_EQ(3, intValue(eval(parse("3"))));
 }
 
-TEST(EvalTest, UndefinedVariableThrows) {
+TEST(Eval, EvaluatesBoolToItself) {
+    ASSERT_EQ(true, boolValue(eval(parse("#t"))));
+}
+
+TEST(Eval, ThrowsOnUndefinedVariable) {
     ASSERT_THROW(eval(parse("um")), scheme_error);
 }
 
-TEST(EvalTest, UnquotedEmptyListThrows) {
+TEST(Eval, ThrowsOnEmptyList) {
     ASSERT_THROW(eval(parse("()")), scheme_error);
 }
 
-TEST(QuoteTest, UndefinedSymbolReturnedIntact) {
+TEST(Quote, ReturnsUnboundSymbolIntact) {
     ASSERT_EQ("foo", symbolValue(eval(parse("(quote foo)"))).string);
 }
 
-TEST(QuoteTest, NoArgsThrows) {
+TEST(Quote, ThrowsOnNoArgs) {
     ASSERT_THROW(eval(parse("(quote)")), scheme_error);
 }
 
-TEST(QuoteTest, MoreThanOneArgThrows) {
+TEST(Quote, ThrowsOnMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(quote 1 2)")), scheme_error);
 }
 
-TEST(DefineTest, DefineVariable) {
+TEST(Define, MutatesEnvironment) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define x 2)"), env);
     ASSERT_EQ(2, intValue(eval(parse("x"), env)));
 }
 
-TEST(DefineTest, LessThanTwoArgsThrows) {
+TEST(Define, ThrowsOnLessThanTwoArgs) {
     ASSERT_THROW(eval(parse("(define)")), scheme_error);
     ASSERT_THROW(eval(parse("(define x)")), scheme_error);
 }
 
-TEST(DefineTest, MoreThanTwoArgsThrows) {
+TEST(Define, ThrowsOnMoreThanTwoArgs) {
     ASSERT_THROW(eval(parse("(define foo 1 2)")), scheme_error);
 }
 
-TEST(IfTest, LessThanTwoArgsThrows) {
+TEST(If, ThrowsWithLessThanThreeArgs) {
     ASSERT_THROW(eval(parse("(if)")),      scheme_error);
     ASSERT_THROW(eval(parse("(if #t)")),   scheme_error);
     ASSERT_THROW(eval(parse("(if #t 1)")), scheme_error);
 }
 
-TEST(IfTest, MoreThanTwoArgsThrows) {
+TEST(If, ThrowsOnMoreThanTwoArgs) {
+    ASSERT_THROW(eval(parse("(if #t 1 2 3)")), scheme_error);
+}
+
+TEST(If, ThrowsOnNonBooleanPredicate) {
     ASSERT_THROW(eval(parse("(if 1 2 3)")), scheme_error);
 }
 
-TEST(IfTest, NonBoolPredicateThrows) {
-    ASSERT_THROW(eval(parse("(if 1 2 3)")), scheme_error);
-}
-
-TEST(IfTest, EvaluatesConsequentOnTrue) {
+TEST(If, EvaluatesConsequentOnTrue) {
     ASSERT_TRUE(boolValue(eval(parse("(if #t (if #t #t #f) #f)"))));
 }
 
-TEST(LambdaTest, CallFunctionLiteral) {
+TEST(Lambda, CanBeCalledDirectly) {
     ASSERT_TRUE(boolValue(eval(parse("((lambda () #t))"))));
 }
 
-TEST(LambdaTest, DefineConstantFunction) {
+TEST(Lambda, CanProduceConstantFunction) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define three (lambda () 3))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(three)"), env)));
 }
 
-TEST(LambdaTest, RestParameter) {
+TEST(Lambda, RestParameterBindsArgsToList) {
     auto env = standardEnvironment();
     eval(parse("(define num-args (lambda (&rest rest) (length rest)))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(num-args 1 2 3)"), env)));
 }
 
-TEST(LambdaTest, EmptyRestParameter) {
+TEST(Lambda, RestParameterCanBeEmpty) {
     auto env = standardEnvironment();
     eval(parse("(define f (lambda (&rest args) (length args)))"), env);
     ASSERT_EQ(0, intValue(eval(parse("(f)"), env)));
 }
 
-TEST(LambdaTest, RestParameterWithRequiredParameters) {
+TEST(Lambda, AllowsRestParameterWithRequiredParameters) {
     auto env = standardEnvironment();
     eval(parse("(define f (lambda (x &rest args) (cons x args)))"), env);
     ASSERT_EQ(3, intValue(eval(parse("(length (f 1 2 3))"), env)));
     ASSERT_THROW(eval(parse("(f)"), env), scheme_error);
 }
 
-TEST(LambdaTest, ReturnValueOfLastExprInBody) {
+TEST(Lambda, ReturnsValueOfLastExprInBody) {
     ASSERT_EQ(3, intValue(eval(parse("((lambda () 1 2 3))"))));
 }
 
-TEST(OrTest, NoArgsIsFalse) {
+TEST(Or, ReturnsFalseWithoutArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(or)"))));
 }
 
-TEST(OrTest, AllArgsFalseIsFalse) {
+TEST(Or, ReturnsFalseWithAllFalseArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(or #f #f #f)"))));
 }
 
-TEST(OrTest, AnyTrueArgsIsTrue) {
-    ASSERT_TRUE(boolValue(eval(parse("(or #f #t #f)"))));
-    ASSERT_TRUE(boolValue(eval(parse("(or #t #t)"))));
+TEST(Or, ReturnsFirstNonFalseArg) {
+    ASSERT_EQ(1, intValue(eval(parse("(or #f #f 1 2 3)"))));
 }
 
-TEST(OrTest, ReturnsFirstNonFalseArg) {
-    ASSERT_EQ(1, intValue(eval(parse("(or #f 1 #t)"))));
-}
-
-TEST(AndTest, NoArgsIsTrue) {
+TEST(And, ReturnsTrueWithNoArgs) {
     ASSERT_TRUE(boolValue(eval(parse("(and)"))));
 }
 
-TEST(AndTest, AnyFalseArgIsFalse) {
+TEST(And, ReturnsFalseIfAnyArgIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(and #t #t #f #t)"))));
 }
 
-TEST(AndTest, AllTrueArgsReturnsLast) {
+TEST(And, ReturnsLastExpressionWithAllTrueArgs) {
     ASSERT_EQ(3, intValue(eval(parse("(and 1 2 3)"))));
 }
 
-TEST(EvalStreamTest, NoErrorOnEmptyStream) {
+TEST(EvalStream, DoesNotThrowOnEmptyStream) {
     std::istringstream in;
     auto env = standardEnvironment();
     ASSERT_NO_THROW(evalStream(in, env));
 }
 
-TEST(EvalStreamTest, EnvironmentChangesVisible) {
+TEST(EvalStream, MutatesEnvironment) {
     std::istringstream in("(define square (lambda (x) (* x x)))");
     auto env = standardEnvironment();
     evalStream(in, env);
     ASSERT_EQ(4, intValue(eval(parse("(square 2)"), env)));
 }
 
-TEST(SetTest, SetUndefinedVariableThrows) {
+TEST(Set, ThrowsOnUndefinedVariable) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     ASSERT_THROW(eval(parse("(set! x 3)"), env), scheme_error);
 }
 
-TEST(SetTest, SetRedefinesVariable) {
+TEST(Set, RedefinesVariable) {
     auto env = std::make_shared<SchemeEnvironment>(SchemeEnvironment());
     eval(parse("(define x 1)"), env);
     ASSERT_EQ(1, intValue(eval(parse("x"), env)));
@@ -148,39 +147,46 @@ TEST(SetTest, SetRedefinesVariable) {
     ASSERT_EQ(2, intValue(eval(parse("x"), env)));
 }
 
-TEST(BeginTest, NoArgsThrows) {
+TEST(Begin, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(begin)")), scheme_error);
 }
 
-TEST(BeginTest, ReturnsLastExpression) {
+TEST(Begin, ReturnsLastExpression) {
     ASSERT_EQ(3, intValue(eval(parse("(begin 1 2 3)"))));
 }
 
-TEST(QuasiquoteTest, NoUnquoteJustQuotes) {
+TEST(Quasiquote, SuppressesEvaluation) {
     ASSERT_EQ("foo", symbolValue(eval(parse("(quasiquote foo)"))).string);
 }
 
-TEST(QuasiquoteTest, UnquoteExpr) {
+TEST(Unquote, EvaluatesQuasiquotedForms) {
     ASSERT_EQ(3, intValue(eval(parse("(quasiquote (unquote (+ 1 2)))"))));
 }
 
-TEST(QuasiquoteTest, UnquoteSubexpr) {
+TEST(Unquote, WorksOnQuasiquoteSubExpressions) {
     ASSERT_EQ(6, intValue(
                   eval(eval(parse("(quasiquote (+ (unquote (+ 1 2)) 3))")))));
 }
 
-TEST(QuasiquoteTest, InvalidUnquoteSplicingThrows) {
+TEST(Unquote, ThrowsOutsideOfQuasiquote) {
+    ASSERT_THROW(eval(parse("(unquote foo)")), scheme_error);
+}
+
+TEST(UnquoteSplicing, ThrowsOutsideOfQuasiquote) {
+    ASSERT_THROW(eval(parse("(unquote-splicing (quote (1)))")), scheme_error);
+}
+
+TEST(UnquoteSplicing, ThrowsAtQuasiquoteToplevel) {
     ASSERT_THROW(eval(parse("(quasiquote (unquote-splicing (quote ())))")),
                  scheme_error);
 }
 
-TEST(QuasiquoteTest, UnquoteSplicingNonListThrows) {
+TEST(UnquoteSplicing, ThrowsOnNonList) {
     ASSERT_THROW(eval(parse("(quasiquote (cons 1 (unquote-splicing 2)))")),
                  scheme_error);
 }
 
-TEST(QuasiquoteTest, UnquoteSplicingSplices) {
-    ASSERT_EQ(parse("(1 2 3)"),
-              eval(parse("(quasiquote (1 2 (unquote-splicing\
-                                             (cons 3 (quote ())))))")));
+TEST(UnquoteSplicing, SplicesAListIntoItsParent) {
+    ASSERT_EQ(parse("(1 2 3)"), eval(parse("`(1 2 ,@(cons 3 '()))")));
 }
+
