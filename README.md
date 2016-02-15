@@ -50,10 +50,10 @@ string literal or as a character literal (ie, #\;).
   quasiquote expression. unquote-splicing evaluates a form which must
   produce a list, and splices it into the surrounding list. In the
   same way quote can be written with ', quasiquote can be written with
-  `, unquote can be written with a comma, and unquote-splicing can be
+  \`, unquote can be written with a comma, and unquote-splicing can be
   written with ,@. (quasiquote (1 2 (unquote (+ 1 2))
-  (unquote-splicing (cons 4 (quote ()))))) is equivalent to `(1 2 ,(+
-  1 2) ,@(cons 4 '())), and both evaluate to (1 2 3 4).
+  (unquote-splicing (cons 4 (quote ()))))) is equivalent to \`(1 2 ,(+
+  1 2) ,@(cons 4 '())) and both evaluate to (1 2 3 4).
 
 ### General Functions
 
