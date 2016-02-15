@@ -5,73 +5,73 @@
 #include "printer.hh"
 #include "scheme_types.hh"
 
-TEST(PrintTest, PrintInteger) {
+TEST(Printer, PrintsInteger) {
     std::ostringstream s;
     s << parse("3");
     ASSERT_EQ("3", s.str());
 }
 
-TEST(PrintTest, PrintSymbol) {
+TEST(Printer, PrintsSymbol) {
     std::ostringstream s;
     s << parse("foo");
     ASSERT_EQ("foo", s.str());
 }
 
-TEST(ListTests, EmptyList) {
+TEST(Printer, PrintsEmptyListAsAnOpenAndCloseParen) {
     std::ostringstream s;
     s << parse("()");
     ASSERT_EQ("()", s.str());
 }
 
-TEST(ListTests, OneElementList) {
+TEST(Printer, PrintsSingleElementListWithNoSpaces) {
     std::ostringstream s;
     s << parse("(1)");
     ASSERT_EQ("(1)", s.str());
 }
 
-TEST(ListTests, MultiElementList) {
+TEST(Printer, PrintsMultiElementListWithSpacesBetweenElements) {
     std::ostringstream s;
     s << parse("(1 2 3)");
     ASSERT_EQ("(1 2 3)", s.str());
 }
 
-TEST(ListTests, InsertSpacesBeforeParens) {
+TEST(Printer, InsertsSpacesBeforeAndAfterSublists) {
     std::ostringstream s;
     s << parse("(1(2)3)");
     ASSERT_EQ("(1 (2) 3)", s.str());
 }
 
-TEST(ListTests, NestedList) {
+TEST(Printer, PrintsArbitrarilyDeeplyNestedLists) {
     std::ostringstream s;
     s << parse("(foo (bar (baz)))");
     ASSERT_EQ("(foo (bar (baz)))", s.str());
 }
 
-TEST(ListTests, DottedList) {
+TEST(Printer, PrintsImproperListWithDotBeforeCdr) {
     std::ostringstream s;
     s << eval(parse("(cons 1 2)"));
     ASSERT_EQ("(1 . 2)", s.str());
 }
 
-TEST(StringTests, String) {
+TEST(Printer, PrintsStringWithDoubleQuotes) {
     std::ostringstream s;
     s << parse("\"um\"");
     ASSERT_EQ("\"um\"", s.str());
 }
 
-TEST(StringTests, EscapedQuotesPrintEscaped) {
+TEST(Printer, EscapesEmbeddedDoubleQuotesInStrings) {
     std::ostringstream s;
     s << parse("\"\\\"um\\\"\"");
     ASSERT_EQ("\"\\\"um\\\"\"", s.str());
 }
 
-TEST(CharacterTests, Character) {
+TEST(Printer, PrintsCharacterWithLiteralSyntax) {
     std::ostringstream s;
     s << parse("#\\h");
     ASSERT_EQ("#\\h", s.str());
 }
 
-TEST(CharacterTests, WhitespaceUsesSymbolicName) {
+TEST(Printer, UsesSymbolicNamesForWhitespaceCharacters) {
     std::ostringstream s;
     s << parse("#\\Space");
     ASSERT_EQ("#\\Space", s.str());

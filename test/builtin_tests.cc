@@ -5,276 +5,282 @@
 
 // +
 
-TEST(AdditionTests, BasicAddition) {
+TEST(Add, AddsIntegers) {
     ASSERT_EQ(3, intValue(eval(parse("(+ 1 2)"))));
 }
 
-TEST(AdditionTests, Identity) {
+TEST(Add, ReturnsZeroWithNoArgs) {
     ASSERT_EQ(0, intValue(eval(parse("(+)"))));
 }
 
-TEST(AdditionTests, NonIntegralThrows) {
+TEST(Add, ThrowsOnNonIntegral) {
     ASSERT_THROW(eval(parse("(+ 1 (quote foo) 2)")), scheme_error);
-}
-
-TEST(AdditionTests, ArgumentsAreEvaluated) {
-    ASSERT_EQ(6, intValue(eval(parse("(+ (+ 1 2) 3)"))));
 }
 
 // -
 
-TEST(SubtractionTests, NoArgsThrows) {
+TEST(Sub, ThrowsOnNoArgs) {
     ASSERT_THROW(eval(parse("(-)")), scheme_error);
 }
 
-TEST(SubtractionTests, OneArgNegates) {
+TEST(Sub, NegatesSingleArgument) {
     ASSERT_EQ(-1, intValue(eval(parse("(- 1)"))));
 }
 
-TEST(SubtractionTests, BasicSubtraction) {
+TEST(Sub, SubtractsSecondNumberFromFirst) {
     ASSERT_EQ(1, intValue(eval(parse("(- 3 2)"))));
 }
 
 // *
 
-TEST(MultiplicationTest, Identity) {
+TEST(Mul, ReturnsOneWithNoArgs) {
     ASSERT_EQ(1, intValue(eval(parse("(*)"))));
 }
 
-TEST(MultiplicationTest, BasicMultiplication) {
+TEST(Mul, ReturnsProductOfArguments) {
     ASSERT_EQ(6, intValue(eval(parse("(* 1 2 3)"))));
 }
 
 // <
 
-TEST(LessThanTest, LessThanTwoArgsThrows) {
+TEST(LessThan, ThrowsWithLessThanTwoArgs) {
     ASSERT_THROW(eval(parse("(<)")), scheme_error);
     ASSERT_THROW(eval(parse("(< 1)")), scheme_error);
 }
 
-TEST(LessThanTest, LessThanIsTrue) {
-    ASSERT_TRUE(boolValue(eval(parse("(< 1 2)"))));
+TEST(LessThan, ReturnsTrueWithAscendingArgs) {
+    ASSERT_TRUE(boolValue(eval(parse("(< 1 2 3)"))));
 }
 
-TEST(LessThanIsTrue, EqualIsFalse) {
+TEST(LessThan, ReturnsFalseWithEqualArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(< 2 2)"))));
 }
 
-TEST(LessThanTest, GreaterThanIsFalse) {
+TEST(LessThan, ReturnsFalseWithDescendingArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(< 2 1)"))));
 }
 
-TEST(LessThanTest, NonIntegerThrows) {
+TEST(LessThan, ThrowsOnNonNumericArgs) {
     ASSERT_THROW(eval(parse("(< (quote a) (quote b))")), scheme_error);
 }
 
 // =
 
-TEST(EqualOpTest, LessThanTwoArgsThrows) {
+TEST(EqualOp, ThrowsWithLessThanTwoArgs) {
     ASSERT_THROW(eval(parse("(=)")), scheme_error);
     ASSERT_THROW(eval(parse("(= 1)")), scheme_error);
 }
 
-TEST(EqualOpTest, NonIntegerThrows) {
+TEST(EqualOp, ThrowsWithNonNumericArgs) {
     ASSERT_THROW(eval(parse("(= 2 (quote um))")), scheme_error);
 }
 
-TEST(EqualOpTest, SameIntegerIsTrue) {
+TEST(EqualOp, ReturnsTrueWithEqualNumericArgs) {
     ASSERT_TRUE(boolValue(eval(parse("(= 2 2)"))));
 }
 
-TEST(EqualOpTest, DifferentIntegersIsFalse) {
+TEST(EqualOp, ReturnsFalseWithNonEqualNumericArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(= 2 2 3)"))));
 }
 
 // >
 
-TEST(GreaterTest, LessThanTwoArgsThrows) {
+TEST(GreaterThan, ThrowsWithLessThanTwoArgs) {
     ASSERT_THROW(eval(parse("(>)")), scheme_error);
     ASSERT_THROW(eval(parse("(> 1)")), scheme_error);
 }
 
-TEST(GreaterTest, LessThanIsFalse) {
+TEST(GreaterThan, ReturnsFalseWithAscendingArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(> 1 2)"))));
 }
 
-TEST(GreaterTest, EqualIsFalse) {
+TEST(GreaterThan, ReturnsFalseWithEqualArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(> 2 2)"))));
 }
 
-TEST(GreaterTest, GreaterIsTrue) {
+TEST(GreaterThan, ReturnsTrueWithDescendingArgs) {
     ASSERT_TRUE(boolValue(eval(parse("(> 3 2 1)"))));
 }
 
 // abs
 
-TEST(AbsTests, PositiveInput) {
+TEST(Abs, ReturnsPositiveNumberIntact) {
     ASSERT_EQ(1, intValue(eval(parse("(abs 1)"))));
 }
 
-TEST(AbsTests, NegativeInput) {
+TEST(Abs, NegatesNegativeNumber) {
     ASSERT_EQ(1, intValue(eval(parse("(abs -1)"))));
+}
+
+TEST(Abs, ThrowsOnNonNumericArg) {
+    ASSERT_THROW(eval(parse("(abs 'um)")), scheme_error);
+}
+
+TEST(Abs, ThrowsWithNoArgs) {
+    ASSERT_THROW(eval(parse("(abs)")), scheme_error);
+}
+
+TEST(Abs, ThrowsWithMoreThanOneArg) {
+    ASSERT_THROW(eval(parse("(abs 1 2)")), scheme_error);
 }
 
 // append
 
-TEST(AppendTests, NoArgsReturnsEmptyList) {
+TEST(Append, ReturnsEmptyListWithNoArgs) {
     ASSERT_EQ(parse("()"), eval(parse("(append)")));
 }
 
-TEST(AppendTests, AppendsTwoLists) {
+TEST(Append, AppendsTwoLists) {
     ASSERT_EQ(parse("(1 2 3 4)"),
               eval(parse("(append (quote (1 2)) (quote (3 4)))")));
 }
 
-TEST(AppendTests, AppendOneAtom) {
+TEST(Append, ReturnsSingleAtomArgIntact) {
     ASSERT_EQ(1, intValue(eval(parse("(append 1)"))));
 }
 
-TEST(AppendTests, CannotAppendAtomToCons) {
+TEST(Append, CannotAppendAtomToCons) {
     ASSERT_THROW(eval(parse("(append 1 (quote ()))")), scheme_error);
 }
 
-TEST(AppendTests, CannotAppendImproperListToList) {
+TEST(Append, CannotAppendImproperListToList) {
     ASSERT_THROW(eval(parse("(append (cons 1 2) (quote ()))")), scheme_error);
 }
 
-TEST(AppendTests, AppendProperListToImproperList) {
+TEST(Append, AppendsProperListToImproperList) {
     ASSERT_NO_THROW(eval(parse("(append (quote (1)) (cons 2 3))")));
     ASSERT_EQ(3, intValue(
                   eval(parse("(cdr (cdr (append (quote (1)) (cons 2 3)))))"))));
 }
 
-TEST(AppendTests, AppendMultipleLists) {
+TEST(Append, AppendsMultipleLists) {
     auto program = "(append (quote (1)) (quote (2)) (quote (3)))";
     ASSERT_EQ(parse("(1 2 3)"), eval(parse(program)));
 }
 
 // car
 
-TEST(CarTests, CarOfNilThrows) {
+TEST(Car, ThrowsOnEmptyList) {
     ASSERT_THROW(eval(parse("(car (quote ()))")), scheme_error);
 }
 
-TEST(CarTests, NonConsArgThrows) {
+TEST(Car, ThrowsOnNonConsArg) {
     ASSERT_THROW(eval(parse("(car 3)")), scheme_error);
 }
 
-TEST(CarTests, MoreThanOneArgThrows) {
+TEST(Car, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(car (quote (1)) (quote (2)))")), scheme_error);
 }
 
-TEST(CarTests, CarReturnsFirstExpr) {
+TEST(Car, ReturnsFirstElementOfList) {
     ASSERT_EQ(1, intValue(eval(parse("(car (quote (1)))"))));
 }
 
 // cdr
 
-TEST(CdrTests, NoArgsThrows) {
+TEST(Cdr, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(cdr)")), scheme_error);
 }
 
-TEST(CdrTests, MoreThanOneArgThrows) {
+TEST(Cdr, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(cdr (quote (1)) (quote (2)))")), scheme_error);
 }
 
-TEST(CdrTests, NonConsArgThrows) {
+TEST(Cdr, ThrowsWithNonConsArg) {
     ASSERT_THROW(eval(parse("(cdr 1)")), scheme_error);
 }
 
-TEST(CdrTests, RetrievesCdrFromCons) {
+TEST(Cdr, RetrievesCdrFromCons) {
     ASSERT_EQ(2, intValue(eval(parse("(cdr (cons 1 2))"))));
 }
 
 // cons
 
-TEST(ConsTests, NoArgsThrows) {
+// Retrieving the car and cdr is tested under car and cdr
+
+TEST(Cons, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(cons)")), scheme_error);
 }
 
-TEST(ConsTests, OneArgThrows) {
+TEST(Cons, ThrowsWithOneArg) {
     ASSERT_THROW(eval(parse("(cons 1)")), scheme_error);
 }
 
-TEST(ConsTests, MoreThanOneArgThrows) {
+TEST(Cons, ThrowsWithMoreThanTwoArgs) {
     ASSERT_THROW(eval(parse("(cons 1 2 3)")), scheme_error);
-}
-
-TEST(ConsTests, RetrievableWithCar) {
-    ASSERT_EQ(1, intValue(eval(parse("(car (cons 1 2))"))));
 }
 
 // cons?
 
-TEST(ConsPTests, NoArgsThrows) {
+TEST(ConsP, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(cons?)")), scheme_error);
 }
 
-TEST(ConsPTests, MoreThanOneArgThrows) {
+TEST(ConsP, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(cons? 1 2)")), scheme_error);
 }
 
-TEST(ConsPTests, ConsIsACons) {
+TEST(ConsP, ReturnsTrueWithConsArg) {
     ASSERT_TRUE(boolValue(eval(parse("(cons? (cons 1 2))"))));
 }
 
-TEST(ConsPTests, NotConsIsNotACons) {
+TEST(ConsP, ReturnsFalseWithNonConsArg) {
     ASSERT_FALSE(boolValue(eval(parse("(cons? 1)"))));
 }
 
-TEST(ConsPTests, NilIsNotACons) {
+TEST(ConsP, ReturnsFalseWithNil) {
     ASSERT_FALSE(boolValue(eval(parse("(cons? (quote ()))"))));
 }
 
 // eq?
 
-TEST(EqTests, LessThanTwoArgsThrows) {
+TEST(Eq, ThrowsWithLessThanTwoArgs) {
     ASSERT_THROW(eval(parse("(eq?)")), scheme_error);
     ASSERT_THROW(eval(parse("(eq? (quote foo))")), scheme_error);
 }
 
-TEST(EqTests, MoreThanTwoArgsThrows) {
+TEST(Eq, ThrowsWithMoreThanTwoArgs) {
     ASSERT_THROW(eval(parse("(eq? (quote foo) (quote bar) (quote baz))")),
                  scheme_error);
 }
 
-TEST(EqTests, NonSymbolArgThrows) {
+TEST(Eq, ThrowsWithNonSymbolArgs) {
     ASSERT_THROW(eval(parse("(eq? 2 2)")), scheme_error);
 }
 
-TEST(EqTests, EqualSymbolsIsTrue) {
+TEST(Eq, ReturnsTrueWithIdenticalSymbolArgs) {
     ASSERT_TRUE(boolValue(eval(parse("(eq? (quote foo) (quote foo))"))));
 }
 
-TEST(EqTests, UnequalSymbolsIsFalse) {
+TEST(Eq, ReturnsFalseWithDistinctSymbolArgs) {
     ASSERT_FALSE(boolValue(eval(parse("(eq? (quote foo) (quote bar))"))));
 }
 
 // equal?
 
-TEST(EqualTests, NoArgsThrows) {
+TEST(Equal, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(equal?)")), scheme_error);
 }
 
-TEST(EqualTests, OneArgThrows) {
+TEST(Equal, ThrowsWithOneArg) {
     ASSERT_THROW(eval(parse("(equal? #t)")), scheme_error);
 }
 
-TEST(EqualTests, MoreThanTwoArgsThrows) {
+TEST(Equal, ThrowsWithMoreThanTwoArgs) {
     ASSERT_THROW(eval(parse("(equal? #t #t #t)")), scheme_error);
 }
 
-TEST(EqualTests, CompareBools) {
+TEST(Equal, AllowsComparisonsWithBools) {
     ASSERT_TRUE(boolValue(eval(parse("(equal? #t #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(equal? #t #f)"))));
 }
 
-TEST(EqualTests, CompareStrings) {
+TEST(Equal, AllowsComparisonsWithStrings) {
     ASSERT_TRUE(boolValue(eval(parse("(equal? \"um\" \"um\")"))));
     ASSERT_FALSE(boolValue(eval(parse("(equal? \"um\" \"hi\")"))));
 }
 
-TEST(EqualTests, CompareLists) {
+TEST(Equal, AllowsComparisonsWithConses) {
     ASSERT_TRUE(boolValue(eval(parse("(equal? (cons 1 (quote ()))\
                                               (cons 1 (quote ())))"))));
     ASSERT_FALSE(boolValue(eval(parse("(equal? (cons 1 (quote ()))\
@@ -284,195 +290,209 @@ TEST(EqualTests, CompareLists) {
                                    ))));
 }
 
-TEST(EqualTests, CompareListWithNil) {
+TEST(Equal, AllowsComparisonsWithNil) {
     ASSERT_FALSE(boolValue(eval(parse("(equal? (quote (1 2 3)) (quote ()))"))));
 }
 
 // length
 
-TEST(LengthTests, NoArgsThrows) {
+TEST(Length, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(length)")), scheme_error);
 }
 
-TEST(LengthTests, MoreThanOneArgThrows) {
+TEST(Length, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(length (quote ()) (quote ()))")), scheme_error);
 }
 
-TEST(LengthTests, EmptyListIsZeroLength) {
+TEST(Length, SaysNilIsOfLengthZero) {
     ASSERT_EQ(0, intValue(eval(parse("(length (quote ()))"))));
 }
 
-TEST(LengthTests, ThreeElementListIsThree) {
+TEST(Length, ReturnsTheLengthOfAProperList) {
     ASSERT_EQ(3, intValue(eval(parse("(length (quote (1 2 3)))"))));
 }
 
-TEST(LengthTests, NonListArgThrows) {
+TEST(Length, ThrowsWithNonConsArg) {
     ASSERT_THROW(eval(parse("(length #t)")), scheme_error);
 }
 
-TEST(LengthTests, ImproperListArgThrows) {
+TEST(Length, ThrowsWithImproperListArg) {
     ASSERT_THROW(eval(parse("(length (cons 1 2))")), scheme_error);
 }
 
 // not
 
-TEST(NotTests, NoArgsThrows) {
+TEST(Not, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(not)")), scheme_error);
 }
 
-TEST(NotTests, MoreThanOneArgThrows) {
+TEST(Not, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(not #t #t)")), scheme_error);
 }
 
-TEST(NotTests, NonBoolArgThrows) {
+TEST(Not, ThrowsOnNonBoolArg) {
     ASSERT_THROW(eval(parse("(not 1)")), scheme_error);
     ASSERT_THROW(eval(parse("(not (quote um))")), scheme_error);
 }
 
-TEST(NotTests, NotTrueIsFalse) {
+TEST(Not, ReturnsFalseOnTrue) {
     ASSERT_FALSE(boolValue(eval(parse("(not #t)"))));
 }
 
-TEST(NotTests, NotFalseIsTrue) {
+TEST(Not, ReturnsTrueOnFalse) {
     ASSERT_TRUE(boolValue(eval(parse("(not #f)"))));
 }
 
 // null?
 
-TEST(NullTests, NoArgsThrows) {
+TEST(Null, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(null?)")), scheme_error);
 }
 
-TEST(NullTests, MoreThanOneArgThrows) {
+TEST(Null, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(null? 1 2)")), scheme_error);
 }
 
-TEST(NullTests, NilIsNull) {
+TEST(Null, ReturnsTrueOnTheEmptyList) {
     ASSERT_TRUE(boolValue(eval(parse("(null? (quote ()))"))));
 }
 
-TEST(NullTests, NotNilIsFalse) {
+TEST(Null, ReturnsFalseExceptOnTheEmptyList) {
     ASSERT_FALSE(boolValue(eval(parse("(null? 1)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(cons 1 '())"))));
+    ASSERT_FALSE(boolValue(eval(parse("#t"))));
 }
 
 // string-length
 
-TEST(StringLengthTests, NoArgsThrows) {
+TEST(StringLength, ThrowsOnNoArgs) {
     ASSERT_THROW(eval(parse("(string-length)")), scheme_error);
 }
 
-TEST(StringLengthTests, MoreThanOneArgsThrows) {
+TEST(StringLength, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(string-length \"um\" \"hi\")")), scheme_error);
 }
 
-TEST(StringLengthTests, NonStringArgThrows) {
+TEST(StringLength, ThrowsWithNonStringArg) {
     ASSERT_THROW(eval(parse("(string-length (quote (1 2 3)))")), scheme_error);
 }
 
-TEST(StringLengthTests, EmptyStringIsZeroLength) {
+TEST(StringLength, SaysTheEmptyStringIsOfZeroLength) {
     ASSERT_EQ(0, intValue(eval(parse("(string-length \"\")"))));
 }
 
-TEST(StringLengthTests, StringLength) {
+TEST(StringLength, ReturnsTheNumberOfCharactersInAString) {
     ASSERT_EQ(2, intValue(eval(parse("(string-length \"um\")"))));
+}
+
+TEST(StringLength, CountsNewlinesAsCharacters) {
+    ASSERT_EQ(1, intValue(eval(parse("(string-length \"\n\")"))));
 }
 
 // string-ref
 
-TEST(StringRefTests, NoArgsThrows) {
+TEST(StringRef, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(string-ref)")), scheme_error);
 }
 
-TEST(StringRefTests, OneArgThrows) {
+TEST(StringRef, ThrowsWithOneArg) {
     ASSERT_THROW(eval(parse("(string-ref \"um\")")), scheme_error);
 }
 
-TEST(StringRefTests, MoreThanTwoArgsThrows) {
+TEST(StringRef, ThrowsWithMoreThanTwoArgs) {
     ASSERT_THROW(eval(parse("(string-ref \"um\" 1 2)")), scheme_error);
 }
 
-TEST(StringRefTests, NonStringFirstArgThrows) {
+TEST(StringRef, ThrowsWhenFirstArgIsNotAString) {
     ASSERT_THROW(eval(parse("(string-ref (quote um) 1)")), scheme_error);
 }
 
-TEST(StringRefTests, NonIntegerSecondArgThrows) {
+TEST(StringRef, ThrowsWhenSecondArgIsNotAnInteger) {
     ASSERT_THROW(eval(parse("(string-ref \"um\" #\\u)")), scheme_error);
 }
 
-TEST(StringRefTests, ValidIndexGetsCharacter) {
+TEST(StringRef, RetrievesCharacterWithValidStringAndIndex) {
     ASSERT_EQ('u', charValue(eval(parse("(string-ref \"um\" 0)"))));
 }
 
-TEST(ConspTests, NoArgsThrows) {
+// cons?
+
+TEST(Consp, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(cons?)")), scheme_error);
 }
 
-TEST(ConspTests, MoreThanOneArgThrows) {
+TEST(Consp, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(cons? (cons 1 2) (cons 3 4))")), scheme_error);
 }
 
-TEST(ConspTests, ConsIsTrue) {
+TEST(Consp, ReturnsTrueWhenGivenACons) {
     ASSERT_TRUE(boolValue(eval(parse("(cons? (cons 1 2))"))));
 }
 
-TEST(ConspTests, NonConsIsFalse) {
+TEST(Consp, ReturnsFalseWithNonConsArg) {
     ASSERT_FALSE(boolValue(eval(parse("(cons? (quote ()))"))));
     ASSERT_FALSE(boolValue(eval(parse("(cons? #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(cons? 1)"))));
     ASSERT_FALSE(boolValue(eval(parse("(cons? \"um\")"))));
 }
 
-TEST(StringpTests, NoArgsThrows) {
+// string?
+
+TEST(Stringp, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(string?)")), scheme_error);
 }
 
-TEST(StringpTests, MoreThanOneArgThrows) {
+TEST(Stringp, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(string? \"um\" \"hi\")")), scheme_error);
 }
 
-TEST(StringpTests, StringIsTrue) {
+TEST(Stringp, ReturnsTrueWithStringArg) {
     ASSERT_TRUE(boolValue(eval(parse("(string? \"um\")"))));
 }
 
-TEST(StringpTests, NonStringIsFalse) {
+TEST(Stringp, ReturnsFalseWithNonStringArg) {
     ASSERT_FALSE(boolValue(eval(parse("(string? #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(string? 1)"))));
     ASSERT_FALSE(boolValue(eval(parse("(string? #\\a)"))));
     ASSERT_FALSE(boolValue(eval(parse("(string? (cons 1 2))"))));
 }
 
-TEST(NumberpTests, NoArgsThrows) {
+// number?
+
+TEST(Numberp, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(number?)")), scheme_error);
 }
 
-TEST(NumberpTests, MoreThanOneArgThrows) {
+TEST(Numberp, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(number? 1 2)")), scheme_error);
 }
 
-TEST(NumberpTests, NumberIsTrue) {
+TEST(Numberp, ReturnsTrueWithNumericArg) {
     ASSERT_TRUE(boolValue(eval(parse("(number? 1)"))));
 }
 
-TEST(NumberpTests, NonNumberIsFalse) {
+TEST(Numberp, ReturnsFalseWithNonNumericArg) {
     ASSERT_FALSE(boolValue(eval(parse("(number? #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(number? \"um\")"))));
     ASSERT_FALSE(boolValue(eval(parse("(number? #\\a)"))));
     ASSERT_FALSE(boolValue(eval(parse("(number? (cons 1 2))"))));
 }
 
-TEST(SymbolpTests, NoArgsThrows) {
+// symbol?
+
+TEST(Symbolp, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(symbol?)")), scheme_error);
 }
 
-TEST(SymbolpTests, MoreThanOneArgThrows) {
+TEST(Symbolp, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(symbol? (quote a) (quote b))")), scheme_error);
 }
 
-TEST(SymbolpTests, SymbolIsTrue) {
+TEST(Symbolp, ReturnsTrueWithSymbolArg) {
     ASSERT_TRUE(boolValue(eval(parse("(symbol? (quote foo))"))));
 }
 
-TEST(SymbolpTests, NonSymbolIsFalse) {
+TEST(Symbolp, ReturnsFalseWithNonSymbolArg) {
     ASSERT_FALSE(boolValue(eval(parse("(symbol? #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(symbol? \"um\")"))));
     ASSERT_FALSE(boolValue(eval(parse("(symbol? #\\a)"))));
@@ -480,19 +500,21 @@ TEST(SymbolpTests, NonSymbolIsFalse) {
     ASSERT_FALSE(boolValue(eval(parse("(symbol? (quote ()))"))));
 }
 
-TEST(CharacterpTests, NoArgsThrows) {
+// character?
+
+TEST(Characterp, ThrowsWithNoArgs) {
     ASSERT_THROW(eval(parse("(character?)")), scheme_error);
 }
 
-TEST(CharacterpTests, MoreThanOneArgThrows) {
+TEST(Characterp, ThrowsWithMoreThanOneArg) {
     ASSERT_THROW(eval(parse("(character? #\\a #\\b)")), scheme_error);
 }
 
-TEST(CharacterpTests, CharacterIsTrue) {
+TEST(Characterp, ReturnsTrueWithCharacterArg) {
     ASSERT_TRUE(boolValue(eval(parse("(character? #\\a)"))));
 }
 
-TEST(CharacterpTests, NonCharacterIsFalse) {
+TEST(Characterp, ReturnsFalseWithNonCharacterArg) {
     ASSERT_FALSE(boolValue(eval(parse("(character? #t)"))));
     ASSERT_FALSE(boolValue(eval(parse("(character? \"um\")"))));
     ASSERT_FALSE(boolValue(eval(parse("(character? (cons 1 2))"))));
