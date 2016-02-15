@@ -10,7 +10,11 @@ namespace scheme {
 
 SchemeExpr abs(const SchemeArgs& args)
 {
-    return std::abs(intValue(args.front()));
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "abs requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else return std::abs(intValue(args.front()));
 }
 
 SchemeExpr add(const SchemeArgs& args)

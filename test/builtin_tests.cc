@@ -359,8 +359,8 @@ TEST(Null, ReturnsTrueOnTheEmptyList) {
 
 TEST(Null, ReturnsFalseExceptOnTheEmptyList) {
     ASSERT_FALSE(boolValue(eval(parse("(null? 1)"))));
-    ASSERT_FALSE(boolValue(eval(parse("(cons 1 '())"))));
-    ASSERT_FALSE(boolValue(eval(parse("#t"))));
+    ASSERT_FALSE(boolValue(eval(parse("(null? (cons 1 '()))"))));
+    ASSERT_FALSE(boolValue(eval(parse("(null? #t)"))));
 }
 
 // string-length
