@@ -119,7 +119,7 @@ void readSchemeExpr(const std::string& string, SchemeExpr& out)
     readSchemeExpr(in, out);
 }
 
-std::istream& readUntil(std::istream& in, char delimiter, std::string& out)
+std::istream& readString(std::istream& in, std::string& out)
 {
     in >> std::noskipws;
     std::ostringstream string;
@@ -206,7 +206,7 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
         out = false;
     } else if (token == "\"") {
         std::string string;
-        if (readUntil(in, '"', string)) out = string;
+        if (readString(in, string)) out = string;
         else throw scheme_error("Unclosed string literal");
     } else {
         out = SchemeSymbol{token};
@@ -214,8 +214,6 @@ std::istream& readSchemeExpr(std::istream& in, SchemeExpr& out)
 
     return in;
 }
-
-// parse() is only retained for testing
 
 SchemeExpr parse(const std::string& program)
 {
