@@ -294,6 +294,16 @@ TEST(Equal, AllowsComparisonsWithNil) {
     ASSERT_FALSE(boolValue(eval(parse("(equal? (quote (1 2 3)) (quote ()))"))));
 }
 
+TEST(Equal, ConsidersEqualCharsEqual) {
+    ASSERT_TRUE(boolValue(eval(parse("(equal? #\\a #\\a)"))));
+}
+
+TEST(Equal, DoesCaseSensitiveComparisons) {
+    ASSERT_FALSE(boolValue(eval(parse("(equal? 'foo 'FOO)"))));
+    ASSERT_FALSE(boolValue(eval(parse("(equal? \"foo\" \"FOO\")"))));
+    ASSERT_FALSE(boolValue(eval(parse("(equal? #\\x #\\X)"))));
+}
+
 // length
 
 TEST(Length, ThrowsWithNoArgs) {
