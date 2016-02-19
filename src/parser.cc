@@ -135,7 +135,7 @@ std::istream& readString(std::istream& in, std::string& out)
             }
         }
         else if (c == '\\') escaped = true;
-        else if (c == delimiter) break;
+        else if (c == '"') break;
         else string << c;
     }
     out = string.str();
