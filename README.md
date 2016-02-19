@@ -104,6 +104,7 @@ the end of a chain of conses representing a list.
   second representing the cdr, and constructs a cons containing them
 * cons? returns #t if its argument is a cons, or #f otherwise
 * length returns the length of a proper list
+* list->string converts a list of characters into a string
 * null? returns #t if its argument is the empty list, or #f otherwise
 
 ### Strings

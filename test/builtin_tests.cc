@@ -330,6 +330,33 @@ TEST(Length, ThrowsWithImproperListArg) {
     ASSERT_THROW(eval(parse("(length (cons 1 2))")), scheme_error);
 }
 
+// list->string
+
+TEST(ListToString, CoercesEmptyListToEmptyString) {
+    ASSERT_EQ("", stringValue(eval(parse("(list->string '())"))));
+}
+
+TEST(ListToString, CoercesListOfCharactersIntoString) {
+    ASSERT_EQ("abc", stringValue(
+                  eval(parse("(list->string '(#\\a #\\b #\\c))"))));
+}
+
+TEST(ListToString, ThrowsOnNonListArg) {
+    ASSERT_THROW(eval(parse("(list->string 'foo)")), scheme_error);
+}
+
+TEST(ListToString, ThrowsIfListContainsNonCharacters) {
+    ASSERT_THROW(eval(parse("(list->string '(#\\a 'b #\\c))")), scheme_error);
+}
+
+TEST(ListToString, ThrowsWithNoArgs) {
+    ASSERT_THROW(eval(parse("(list->string)")), scheme_error);
+}
+
+TEST(ListToString, ThrowsWithMoreThanOneArg) {
+    ASSERT_THROW(eval(parse("(list->string '(#\\a) '(#\\b))")), scheme_error);
+}
+
 // not
 
 TEST(Not, ThrowsWithNoArgs) {

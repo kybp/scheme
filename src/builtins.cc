@@ -325,6 +325,21 @@ SchemeExpr symbolp(const SchemeArgs& args)
     }
 }
 
+SchemeExpr listToString(const SchemeArgs& args)
+{
+    if (args.size() != 1) {
+        std::ostringstream error;
+        error << "list->string requires one argument, passed " << args.size();
+        throw scheme_error(error);
+    } else {
+        std::vector<SchemeExpr> vec = vectorFromExpr(args.front());
+        std::string string;
+        std::transform(vec.begin(), vec.end(),
+                       back_inserter(string), charValue);
+        return string;
+    }
+}
+
 } // end namespace
 
 SchemeExpr eval(const SchemeExpr& e)
@@ -364,6 +379,7 @@ std::shared_ptr<SchemeEnvironment> standardEnvironment()
     addPrimitive(names, functions, "eq?", scheme::eq);
     addPrimitive(names, functions, "equal?", scheme::equalp);
     addPrimitive(names, functions, "length", scheme::length);
+    addPrimitive(names, functions, "list->string", scheme::listToString);
     addPrimitive(names, functions, "newline", scheme::newline);
     addPrimitive(names, functions, "not", scheme::_not);
     addPrimitive(names, functions, "null?", scheme::nullp);
