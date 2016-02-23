@@ -11,7 +11,8 @@ scheme_types.o: $(SRC_DIR)/scheme_types.hh
 eval.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/eval.hh $(SRC_DIR)/eval.cc
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/eval.cc
 
-parser.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc
+parser.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/parser.hh $(SRC_DIR)/parser.cc\
+          $(SRC_DIR)/printer.hh
 	$(CXX) $(CPPFLAGS) -I$(SRC_DIR) -c $(SRC_DIR)/parser.cc
 
 builtins.o: $(SRC_DIR)/scheme_types.hh $(SRC_DIR)/builtins.hh\
